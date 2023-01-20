@@ -1,6 +1,5 @@
 package funkin.base;
 
-import haxe.ds.StringMap;
 import flixel.system.FlxAssets.FlxGraphicAsset;
 import flixel.graphics.FlxGraphic;
 import flixel.FlxSprite;

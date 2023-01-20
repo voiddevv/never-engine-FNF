@@ -20,7 +20,7 @@ class IniParser {
         var sections:Ini = new Ini();
 
         // Split the data into lines
-        var lines = data.split("\n");
+        var lines:Array<String> = data.split("\n");
 
         // Keep track of the current section
         var currentSection:Null<String> = null;

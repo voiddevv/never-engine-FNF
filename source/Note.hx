@@ -43,8 +43,6 @@ class Note extends FlxSprite
 
 		this.noteData = noteData;
 
-		var daStage:String = "cum";
-
 		frames = Assets.load(SPARROW,Paths.image('NOTE_assets'));
 
 		animation.addByPrefix('greenScroll', 'green0');

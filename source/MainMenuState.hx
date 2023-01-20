@@ -30,7 +30,6 @@ class MainMenuState extends MusicBeatState
 
 	override function create()
 	{
-		trace(File.getContent(FileSystem.absolutePath('../../.build')));
 		transIn = FlxTransitionableState.defaultTransIn;
 		transOut = FlxTransitionableState.defaultTransOut;
 
@@ -170,13 +169,10 @@ class MainMenuState extends MusicBeatState
 										FlxG.switchState(new FreeplayState());
 
 										trace("Freeplay Menu Selected");
-
-									case 'options':
-										FlxG.switchState(new OptionsMenu());
 								}
 							});
 						}
-					});
+					}); 
 				}
 			}
 		}

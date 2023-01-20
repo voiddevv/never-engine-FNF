@@ -12,8 +12,7 @@ import Song.SwagSong;
 
 using StringTools;
 
-class PlayState extends MusicBeatState
-{
+class PlayState extends MusicBeatState {
 	public var bf:Character;
 	public var dad:Character;
 	public var modChart = new Hscript();
@@ -49,30 +48,26 @@ class PlayState extends MusicBeatState
 		[1.0, 'SS']
 	];
 
-	function get_accuracy():Float
-	{
+	function get_accuracy():Float {
 		if (totalNotes == 0 || totalHit == 0)
 			return 0.0;
 		return totalHit / (totalNotes + misses);
 	}
 
 	/**preload your shit here**/
-	override function preload()
-	{
+	override function preload() {
 		super.preload();
 		trace("PRELOADING SONG");
 		Assets.load(SOUND, Paths.inst(SONG.song));
 		Assets.load(SOUND, Paths.voices(SONG.song));
 		trace("LOADING... SCRIPTS");
-		for (script in FileSystem.readDirectory(FileSystem.absolutePath(Paths.getPath('data/${SONG.song.toLowerCase()}'))))
-		{
+		for (script in FileSystem.readDirectory(FileSystem.absolutePath(Paths.getPath('data/${SONG.song.toLowerCase()}')))) {
 			if (script.endsWith('.hx'))
 				modChart.loadScript('data/${SONG.song.toLowerCase()}/${script.replace(".hx", "")}');
 		}
 	}
 
-	override function create()
-	{
+	override function create() {
 		super.create();
 		modChart.interp.scriptObject = this;
 		FlxG.cameras.add(camHUD, false);
@@ -95,8 +90,7 @@ class PlayState extends MusicBeatState
 		modChart.call("createPost");
 	}
 
-	function beatHit(curBeat)
-	{
+	function beatHit(curBeat) {
 		modChart.call("beatHit", [curBeat]);
 		if (!dad.animation.name.startsWith("sing"))
 			dad.dance();
@@ -106,24 +100,20 @@ class PlayState extends MusicBeatState
 		// 	dad.dance();
 	}
 
-	function stepHit(curStep)
-	{
+	function stepHit(curStep) {
 		modChart.call("stepHit", [curStep]);
-		if (UI.songStarted && FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20)
-		{
+		if (UI.songStarted && FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20) {
 			UI.resyncVocals();
 		}
 	}
 
-	override function update(elapsed:Float)
-	{
+	override function update(elapsed:Float) {
 		super.update(elapsed);
 		if (UI != null)
 			keyShit();
 	}
 
-	public function dadNoteHit(note:Note)
-	{
+	public function dadNoteHit(note:Note) {
 		if (note == null)
 			return;
 		dad.holdTimer = 0;
@@ -133,15 +123,13 @@ class PlayState extends MusicBeatState
 		note.kill();
 		note.destroy();
 		UI.dadStrum.members[note.noteData].playAnim("confirm");
-		UI.dadStrum.members[note.noteData].animation.finishCallback = function(name)
-		{
+		UI.dadStrum.members[note.noteData].animation.finishCallback = function(name) {
 			if (name == "confirm")
 				UI.dadStrum.members[note.noteData].playAnim('idle');
 		}
 	}
 
-	public function playerNoteHit(note:Note)
-	{
+	public function playerNoteHit(note:Note) {
 		if (note == null)
 			return;
 		bf.holdTimer = 0;
@@ -155,8 +143,7 @@ class PlayState extends MusicBeatState
 		note.destroy();
 	}
 
-	public function NoteMiss(direction:Int, note:Note)
-	{
+	public function NoteMiss(direction:Int, note:Note) {
 		if (note == null)
 			return;
 		var dirs:Array<String> = ['LEFT', 'DOWN', 'UP', 'RIGHT'];
@@ -201,8 +188,7 @@ class PlayState extends MusicBeatState
 		keys[data] = false;
 	}
 
-	private function onPress(evt:KeyboardEvent):Void
-	{ // this actually handles press inputs
+	private function onPress(evt:KeyboardEvent):Void { // this actually handles press inputs
 
 		if (UI == null)
 			return;
@@ -235,21 +221,18 @@ class PlayState extends MusicBeatState
 			if (binds[i].toLowerCase() == key.toLowerCase())
 				data = i;
 		}
-		if (data == -1)
-		{
+		if (data == -1) {
 			trace("couldn't find a keybind with the code " + key);
 			return;
 		}
-		if (keys[data])
-		{
+		if (keys[data]) {
 			return;
 		}
 
 		keys[data] = true;
 		closestNotes = [];
 
-		UI.notes.forEachAlive(function(daNote:Note)
-		{
+		UI.notes.forEachAlive(function(daNote:Note) {
 			if (daNote.canBeHit && daNote.mustPress && !daNote.wasGoodHit)
 				closestNotes.push(daNote);
 		}); // Collect notes that can be hit
@@ -260,27 +243,23 @@ class PlayState extends MusicBeatState
 		for (i in closestNotes)
 			if (i.noteData == data && !i.isSustainNote)
 				dataNotes.push(i);
-		if (dataNotes.length != 0)
-		{
+		if (dataNotes.length != 0) {
 			var coolNote = null;
 
-			for (i in dataNotes)
-			{
+			for (i in dataNotes) {
 				coolNote = i;
 				break;
 			}
 
 			if (dataNotes.length > 1) // stacked notes or really close ones
 			{
-				for (i in 0...dataNotes.length)
-				{
+				for (i in 0...dataNotes.length) {
 					if (i == 0) // skip the first note
 						continue;
 
 					var note = dataNotes[i];
 
-					if (!note.isSustainNote && ((note.strumTime - coolNote.strumTime) < 2) && note.noteData == data)
-					{
+					if (!note.isSustainNote && ((note.strumTime - coolNote.strumTime) < 2) && note.noteData == data) {
 						trace('found a stacked/really close note ' + (note.strumTime - coolNote.strumTime));
 						// just fuckin remove it since it's a stacked note and shouldn't be there
 						note.kill();
@@ -323,27 +302,22 @@ class PlayState extends MusicBeatState
 
 		// Prevent player input if botplay is on
 		// HOLDS, check for sustain notes
-		if (holdArray.contains(true) && UI.songStarted)
-		{
-			UI.notes.forEachAlive(function(daNote:Note)
-			{
+		if (holdArray.contains(true) && UI.songStarted) {
+			UI.notes.forEachAlive(function(daNote:Note) {
 				if (daNote.prevNote.wasGoodHit
 					&& Conductor.songPosition - daNote.strumTime >= 0
 					&& daNote.isSustainNote
 					&& daNote.canBeHit
 					&& daNote.mustPress
-					&& holdArray[daNote.noteData])
-				{
+					&& holdArray[daNote.noteData]) {
 					playerNoteHit(daNote);
 				}
 			});
 		}
 
-		if ((!FlxG.keys.justPressed.ANY))
-		{
+		if ((!FlxG.keys.justPressed.ANY)) {
 			// PRESSES, check for note hits
-			if (pressArray.contains(true) && UI.songStarted)
-			{
+			if (pressArray.contains(true) && UI.songStarted) {
 				bf.holdTimer = 0;
 
 				var possibleNotes:Array<Note> = []; // notes that can be hit
@@ -351,31 +325,24 @@ class PlayState extends MusicBeatState
 				var dumbNotes:Array<Note> = []; // notes to kill later
 				var directionsAccounted:Array<Bool> = [false, false, false, false]; // we don't want to do judgments for more than one presses
 
-				UI.notes.forEachAlive(function(daNote:Note)
-				{
-					if (daNote.canBeHit && daNote.mustPress && !daNote.wasGoodHit && !directionsAccounted[daNote.noteData])
-					{
-						if (directionList.contains(daNote.noteData))
-						{
+				UI.notes.forEachAlive(function(daNote:Note) {
+					if (daNote.canBeHit && daNote.mustPress && !daNote.wasGoodHit && !directionsAccounted[daNote.noteData]) {
+						if (directionList.contains(daNote.noteData)) {
 							directionsAccounted[daNote.noteData] = true;
-							for (coolNote in possibleNotes)
-							{
-								if (coolNote.noteData == daNote.noteData && Math.abs(daNote.strumTime - coolNote.strumTime) < 10)
-								{ // if it's the same note twice at < 10ms distance, just delete it
+							for (coolNote in possibleNotes) {
+								if (coolNote.noteData == daNote.noteData
+									&& Math.abs(daNote.strumTime - coolNote.strumTime) < 10) { // if it's the same note twice at < 10ms distance, just delete it
 									// EXCEPT u cant delete it in this loop cuz it fucks with the collection lol
 									dumbNotes.push(daNote);
 									break;
-								}
-								else if (coolNote.noteData == daNote.noteData && daNote.strumTime < coolNote.strumTime)
-								{ // if daNote is earlier than existing note (coolNote), replace
+								} else if (coolNote.noteData == daNote.noteData
+									&& daNote.strumTime < coolNote.strumTime) { // if daNote is earlier than existing note (coolNote), replace
 									possibleNotes.remove(coolNote);
 									possibleNotes.push(daNote);
 									break;
 								}
 							}
-						}
-						else
-						{
+						} else {
 							directionsAccounted[daNote.noteData] = true;
 							possibleNotes.push(daNote);
 							directionList.push(daNote.noteData);
@@ -383,8 +350,7 @@ class PlayState extends MusicBeatState
 					}
 				});
 
-				for (note in dumbNotes)
-				{
+				for (note in dumbNotes) {
 					FlxG.log.add("killing dumb ass note at " + note.strumTime);
 					note.kill();
 					UI.notes.remove(note, true);
@@ -397,55 +363,45 @@ class PlayState extends MusicBeatState
 
 				// if (perfectMode)
 				// 	goodNoteHit(possibleNotes[0]);
-				if (possibleNotes.length > 0)
-				{
-					if (!FlxG.save.data.ghost)
-					{
-						for (shit in 0...pressArray.length)
-						{ // if a direction is hit that shouldn't be
+				if (possibleNotes.length > 0) {
+					if (!FlxG.save.data.ghost) {
+						for (shit in 0...pressArray.length) { // if a direction is hit that shouldn't be
 							if (pressArray[shit] && !directionList.contains(shit))
 								NoteMiss(shit, null);
 						}
 					}
-					for (coolNote in possibleNotes)
-					{
-						if (pressArray[coolNote.noteData] && !hit[coolNote.noteData])
-						{
+					for (coolNote in possibleNotes) {
+						if (pressArray[coolNote.noteData] && !hit[coolNote.noteData]) {
 							hit[coolNote.noteData] = true;
 							var noteDiff:Float = -(coolNote.strumTime - Conductor.songPosition);
 							playerNoteHit(coolNote);
 						}
 					}
 				};
-				else if (!FlxG.save.data.ghost)
-				{
+				else if (!FlxG.save.data.ghost) {
 					for (shit in 0...pressArray.length)
 						if (pressArray[shit])
 							NoteMiss(shit, null);
 				}
 			}
-			UI.playerStrum.forEach(function(spr:FNFSprite)
-			{
+			UI.playerStrum.forEach(function(spr:FNFSprite) {
 				if (keys[spr.ID] && spr.animation.curAnim.name != 'confirm' && spr.animation.curAnim.name != 'pressed')
 					spr.playAnim('pressed', false);
 				if (!keys[spr.ID])
 					spr.playAnim('idle', false);
 			});
 		}
-		if (bf.holdTimer > Conductor.stepCrochet * bf.singDur * 0.001 && (!holdArray.contains(true)))
-		{
+		if (bf.holdTimer > Conductor.stepCrochet * bf.singDur * 0.001 && (!holdArray.contains(true))) {
 			if (bf.animation.curAnim.name.startsWith('sing') && !bf.animation.curAnim.name.endsWith('miss'))
 				bf.dance();
 		}
-		if (dad.holdTimer > Conductor.stepCrochet * dad.singDur * 0.001 && (!holdArray.contains(true)))
-		{
+		if (dad.holdTimer > Conductor.stepCrochet * dad.singDur * 0.001 && (!holdArray.contains(true))) {
 			if (dad.animation.curAnim.name.startsWith('sing') && !dad.animation.curAnim.name.endsWith('miss'))
 				dad.dance();
 		}
 	}
 
-	override function destroy()
-	{
+	override function destroy() {
 		FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN, onPress);
 		FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP, onRelease);
 		super.destroy();

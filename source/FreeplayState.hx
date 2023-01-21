@@ -10,7 +10,6 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
-import lime.utils.Assets;
 
 using StringTools;
 
@@ -32,7 +31,7 @@ class FreeplayState extends MusicBeatState
 
 	override function create()
 	{
-		songs = CoolUtil.coolTextFile('assets/data/freeplaySonglist.txt');
+		// songs = CoolUtil.coolTextFile('freeplaySonglist');
 
 		/* 
 			if (FlxG.sound.music != null)
@@ -195,9 +194,9 @@ class FreeplayState extends MusicBeatState
 		{
 			var poop:String = Highscore.formatSong(songs[curSelected].toLowerCase(), curDifficulty);
 
-			trace(poop);
+			trace(Paths.json('data/${songs[curSelected].toLowerCase()}/${diffText.text.toLowerCase()}'));
 
-			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].toLowerCase());
+			PlayState.SONG = Assets.load(JSON,Paths.json('data/${songs[curSelected].toLowerCase()}/${songs[curSelected].toLowerCase()}-${diffText.text.toLowerCase()}'));
 			// PlayState.isStoryMode = false;
 			// PlayState.storyDifficulty = curDifficulty;
 			FlxG.switchState(new PlayState());
@@ -233,7 +232,7 @@ class FreeplayState extends MusicBeatState
 	function changeSelection(change:Int = 0)
 	{
 		// NGio.logEvent('Fresh');
-		FlxG.sound.play('assets/sounds/scrollMenu' + TitleState.soundExt, 0.4);
+		FlxG.sound.play(Assets.load(SOUND,Paths.sound('scrollMenu')), 0.4);
 
 		curSelected += change;
 

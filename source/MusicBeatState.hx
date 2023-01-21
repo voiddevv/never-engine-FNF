@@ -16,6 +16,8 @@ class MusicBeatState extends FlxUIState
 	private var curStep:Int = 0;
 	private var curBeat:Int = 0;
 	private var controls(get, never):Controls;
+	public static var stateName(get,never):String;
+
 
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
@@ -23,16 +25,14 @@ class MusicBeatState extends FlxUIState
 	public function preload() {}
 	override function create()
 	{
-		if (transIn != null)
-			trace('reg ' + transIn.region);
+		trace(stateName);
 		Conductor.reset();
 
 		#if (!web)
 		TitleState.soundExt = '.ogg';
 		#end
-
-		super.create();
 		Mem.clearAll();
+		super.create();
 		preload();
 		FlxG.drawFramerate = FlxG.updateFramerate = Options.GAMEPLAY.get("FRAMERATE");
 	}
@@ -40,5 +40,9 @@ class MusicBeatState extends FlxUIState
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+	}
+
+	static function get_stateName():String {
+		return Type.getClassName(Type.getClass(FlxG.state));
 	}
 }

@@ -276,7 +276,7 @@ class HUD extends FlxSpriteGroup
 				PlayState.CURRENT.dadNoteHit(note);
 		}, true);
 		Conductor.songPosition += elapsed * 1000;
-		if (songStarted && Conductor.songPosition >= voice.length)
+		if (songStarted && voice.playing && Conductor.songPosition >= voice.length)
 			endsong();
 	}
 

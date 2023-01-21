@@ -61,10 +61,10 @@ class PlayState extends MusicBeatState {
 		Assets.load(SOUND, Paths.inst(SONG.song));
 		Assets.load(SOUND, Paths.voices(SONG.song));
 		trace("LOADING... SCRIPTS");
-		for (script in FileSystem.readDirectory(FileSystem.absolutePath(Paths.getPath('data/${SONG.song.toLowerCase()}')))) {
-			if (script.endsWith('.hx'))
-				modChart.loadScript('data/${SONG.song.toLowerCase()}/${script.replace(".hx", "")}');
-		}
+		// for (script in FileSystem.readDirectory(FileSystem.absolutePath(Paths.getPath('data/${SONG.song.toLowerCase()}')))) {
+		// 	if (script.endsWith('.hx'))
+		// 		modChart.loadScript('data/${SONG.song.toLowerCase()}/${script.replace(".hx", "")}');
+		// }
 	}
 
 	override function create() {

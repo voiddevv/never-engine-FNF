@@ -60,7 +60,7 @@ class FPS extends TextField
 
 		if (visible)
 		{
-			text = 'VERSION: 0.0.1\n' + "FPS: " + times.length + "\nMEM: " + mem + " MB\nMEM peak: " + memPeak + " MB";
+			text = 'VERSION: 0.0.1\n' + "FPS: " + times.length +" | DELTA " + FlxG.elapsed + "\nMEM: " + mem + " MB\nMEM peak: " + memPeak + " MB";
 		}
 	}
 }

@@ -1,9 +1,8 @@
 package engine.api;
-
 class Options
 {
 	// default shit
-	static var _GAMEPLAY:Map<String, Dynamic> = ["FRAMERATE" => 360, "DOWNSCROLL" => false, "BOTPLAY" => false];
+	static var _GAMEPLAY:Map<String, Dynamic> = ["FRAMERATE" => 240, "DOWNSCROLL" => false, "BOTPLAY" => false];
 	static var _KEYBINDS:Map<String, String> = ["LEFT" => "A", "DOWN" => "S", "UP" => "K", "RIGHT" => "L"];
 	public static var GAMEPLAY:Map<String, Dynamic> = _GAMEPLAY;
 	public static var KEYBINDS:Map<String, String> = _KEYBINDS;

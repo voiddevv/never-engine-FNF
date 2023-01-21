@@ -62,7 +62,7 @@ class HUD extends FlxSpriteGroup
 		playerStrum.x += 350;
 		dadStrum.y = playerStrum.y = 25;
 		genChart();
-		Conductor.songPosition = -Conductor.crochet * 3;
+		Conductor.songPosition = -Conductor.crochet * 5;
 		countDown();
 	}
 

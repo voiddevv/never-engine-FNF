@@ -32,19 +32,22 @@ class MainMenu extends MusicBeatState {
 		}
 		menuGroup.y += 80;
 		add(menuGroup);
+		changeOption();
 	}
 
 	override function update(elapsed:Float) {
 		super.update(elapsed);
 		if (FlxG.keys.justPressed.DOWN)
 			changeOption(1);
+		if (FlxG.keys.justPressed.UP)
+			changeOption(-1);
 		if (FlxG.keys.justPressed.ENTER)
 			selectItem();
 
 	}
 
 	public function changeOption(sex:Int = 0) {
-		curItem = FlxMath.wrap(curItem + 1, 0, items.length - 1);
+		curItem = FlxMath.wrap(curItem + sex, 0, items.length - 1);
 		menuGroup.forEach(function(item) {
 			item.animation.play('idle');
 			item.updateHitbox();

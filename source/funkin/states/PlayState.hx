@@ -1,5 +1,6 @@
 package funkin.states;
 
+import flixel.math.FlxMath;
 import engine.scripting.Hscript;
 import sys.FileSystem;
 import flixel.FlxSprite;
@@ -22,8 +23,9 @@ class PlayState extends MusicBeatState {
 
 	public var stage:Stage;
 	public var camHUD:FlxCamera = new FlxCamera();
-	public var camGame:FlxCamera = FlxG.camera;
+	public var camGame:FlxCamera;
 	public var UI:HUD;
+	public var defaultCamZoom:Float = 1.05;
 	// scoreText Shit
 	public var combo:Int = 0;
 	public var health = 1.0;
@@ -69,6 +71,7 @@ class PlayState extends MusicBeatState {
 
 	override function create() {
 		super.create();
+		camGame = FlxG.camera;
 		modChart.interp.scriptObject = this;
 		FlxG.cameras.add(camHUD, false);
 		camHUD.bgColor = 0;
@@ -92,6 +95,10 @@ class PlayState extends MusicBeatState {
 
 	function beatHit(curBeat) {
 		modChart.call("beatHit", [curBeat]);
+		if (curBeat % 4 == 0) {
+			FlxG.camera.zoom += 0.015;
+			camHUD.zoom += 0.03;
+		}
 		if (!dad.animation.name.startsWith("sing"))
 			dad.dance();
 		if (!bf.animation.name.startsWith("sing"))
@@ -109,6 +116,10 @@ class PlayState extends MusicBeatState {
 
 	override function update(elapsed:Float) {
 		super.update(elapsed);
+		if (camGame != null)
+			camGame.zoom = FlxMath.lerp(camGame.zoom, defaultCamZoom, FlxG.elapsed / (1 / 60) * 0.05);
+		if (camHUD != null)
+			camHUD.zoom = FlxMath.lerp(camHUD.zoom, 1, FlxG.elapsed / (1 / 60) * 0.05);
 		if (UI != null)
 			keyShit();
 	}
@@ -133,6 +144,7 @@ class PlayState extends MusicBeatState {
 		if (note == null)
 			return;
 		bf.holdTimer = 0;
+		health += 0.023;
 		var dirs:Array<String> = ['LEFT', 'DOWN', 'UP', 'RIGHT'];
 		bf.playAnim('sing${dirs[note.noteData]}', true);
 		UI.playerStrum.members[note.noteData].playAnim("confirm", true);
@@ -146,7 +158,11 @@ class PlayState extends MusicBeatState {
 	public function NoteMiss(direction:Int, note:Note) {
 		if (note == null)
 			return;
+		health -= 0.046;
+
 		var dirs:Array<String> = ['LEFT', 'DOWN', 'UP', 'RIGHT'];
+		misses++;
+		UI.scoreText.text = 'Misses: $misses | Score: ${PlayState.CURRENT.songscore} | Accureac: NO WOEK | Rank: N/A';
 		bf.playAnim('sing${dirs[direction]}miss');
 		UI.notes.remove(note, true);
 		note.kill();

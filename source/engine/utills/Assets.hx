@@ -1,5 +1,6 @@
 package engine.utills;
 
+import openfl.errors.Error;
 import openfl.text.Font;
 import flixel.system.FlxAssets;
 import flixel.text.FlxText;
@@ -63,7 +64,7 @@ class Assets {
 			}
 		} catch (e) {
 			trace("File Named " + '"${path}"' + " not Found");
-			return 0;
+			return null;
 		}
 	}
 }

@@ -1,5 +1,10 @@
 package funkin.base.gameplay;
 
+import flixel.util.FlxStringUtil;
+import haxe.io.Encoding;
+import haxe.crypto.BaseCode;
+import haxe.io.Bytes;
+import haxe.crypto.Base64;
 import flixel.FlxSprite;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
@@ -10,9 +15,7 @@ import flixel.util.FlxTimer;
 import flixel.system.FlxSound;
 import flixel.math.FlxMath;
 import flixel.group.FlxSpriteGroup;
-
-class HUD extends FlxSpriteGroup
-{
+class HUD extends FlxSpriteGroup {
 	public var dadStrum:Strum;
 	public var playerStrum:Strum;
 	public var notes:FlxTypedSpriteGroup<Note> = new FlxTypedSpriteGroup();
@@ -27,9 +30,8 @@ class HUD extends FlxSpriteGroup
 	public var GAME = PlayState.CURRENT;
 	public var ratingGroup:FlxSpriteGroup = new FlxSpriteGroup();
 	public var comboGroup:FlxSpriteGroup = new FlxSpriteGroup();
-
-	public function new()
-	{
+	public var timeText:FlxText;
+	public function new() {
 		super();
 		Conductor.changeBPM(PlayState.SONG.bpm);
 		Conductor.mapBPMChanges(PlayState.SONG);
@@ -42,8 +44,10 @@ class HUD extends FlxSpriteGroup
 		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8),
 			PlayState.CURRENT, "health", 0, 2);
 		healthBar.createFilledBar(FlxColor.RED, FlxColor.LIME);
-		scoreText = new FlxText(0, FlxG.height * 0.95, 0, 'Misses: N/A | Score: ${PlayState.CURRENT.songscore} | Accureac: NO WOEK | Rank: N/A');
-		scoreText.setFormat(Paths.font('vcr.ttf'), 18, 0xFFFFFFFF, CENTER, OUTLINE, 0xFF000000, true);
+		scoreText = new FlxText(0, FlxG.height * 0.95, 0, '< Misses: N/A ~ Score: ${PlayState.CURRENT.songscore} ~ Accureac: NO WOEK ~ Rank: N/A >');
+		scoreText.setFormat(Paths.font('vcr.ttf'), 16, 0xFFFFFFFF, CENTER, OUTLINE, 0xFF000000, true);
+		timeText = new FlxText(0, FlxG.height * 0.1, 0, 'Time Left ?:??');
+		timeText.setFormat(Paths.font('vcr.ttf'), 28, 0xFFFFFFFF, CENTER, OUTLINE, 0xFF000000, true);
 		add(healthBarBG);
 		add(healthBar);
 		add(dadIcon);
@@ -55,6 +59,7 @@ class HUD extends FlxSpriteGroup
 		add(ratingGroup);
 		ratingGroup.scale.set(0.7, 0.7);
 		add(scoreText);
+		add(timeText);
 		scoreText.screenCenter(X);
 		dadStrum.screenCenter(X);
 		playerStrum.screenCenter(X);
@@ -64,17 +69,16 @@ class HUD extends FlxSpriteGroup
 		genChart();
 		Conductor.songPosition = -Conductor.crochet * 5;
 		countDown();
+		timeText.alpha = 0;
 	}
 
-	function getNoteDiff(note:Note)
-	{
+	function getNoteDiff(note:Note) {
 		return Math.abs(Conductor.songPosition - note.strumTime);
 	}
 
 	public var ratings:Array<Int> = [135, 90, 45, 0];
 
-	public function getRating(note:Note):Int
-	{
+	public function getRating(note:Note):Int {
 		for (rating in ratings)
 			if (!note.isSustainNote && getNoteDiff(note) >= rating)
 				return rating;
@@ -83,8 +87,7 @@ class HUD extends FlxSpriteGroup
 
 	var ratmap = [0 => "sick", 45 => "good", 90 => "bad", 135 => "shit"];
 
-	public function popUpScore(note:Note)
-	{
+	public function popUpScore(note:Note) {
 		if (note.isSustainNote)
 			return;
 		GAME.combo++;
@@ -93,8 +96,7 @@ class HUD extends FlxSpriteGroup
 		var ratingName:String = ratmap.get(rating);
 		trace(rating);
 		trace("hit time is " + hitTime);
-		switch (ratingName)
-		{
+		switch (ratingName) {
 			case "sick":
 				PlayState.CURRENT.songscore += 300;
 				health -= 0.023;
@@ -120,8 +122,7 @@ class HUD extends FlxSpriteGroup
 		trace(comboNums);
 		FlxTween.tween(ratingSprite, {alpha: 0}, 0.2, {
 			startDelay: Conductor.crochet / 1000,
-			onComplete: function(twe)
-			{
+			onComplete: function(twe) {
 				ratingSprite.kill();
 				remove(ratingSprite, true);
 			}
@@ -134,8 +135,7 @@ class HUD extends FlxSpriteGroup
 		ratingGroup.add(comboSpr);
 		FlxTween.tween(comboSpr, {alpha: 0}, 0.2, {
 			startDelay: Conductor.crochet / 1000,
-			onComplete: function(twe)
-			{
+			onComplete: function(twe) {
 				ratingSprite.kill();
 				remove(comboSpr, true);
 			}
@@ -143,8 +143,7 @@ class HUD extends FlxSpriteGroup
 
 		comboSpr.velocity.x += FlxG.random.int(1, 10);
 		var i = 0;
-		for (num in comboNums)
-		{
+		for (num in comboNums) {
 			var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image('num' + Std.int(num)));
 			numScore.screenCenter();
 			numScore.x = FlxG.width * 0.55 + (45 * i) - 90;
@@ -155,8 +154,7 @@ class HUD extends FlxSpriteGroup
 			numScore.velocity.y -= 150;
 			FlxTween.tween(numScore, {alpha: 0}, 0.2, {
 				startDelay: Conductor.crochet / 1000,
-				onComplete: function(twe)
-				{
+				onComplete: function(twe) {
 					numScore.kill();
 					remove(numScore, true);
 				}
@@ -164,17 +162,15 @@ class HUD extends FlxSpriteGroup
 		}
 		ratingGroup.scale.set(0.7, 0.7);
 		comboGroup.scale.set(0.5, 0.5);
-		scoreText.text = 'Misses: N/A | Score: ${PlayState.CURRENT.songscore} | Accureac: NO WOEK | Rank: N/A';
+		scoreText.text = 'Misses: ${GAME.misses} | Score: ${GAME.songscore} | Accureac: NO WOEK | Rank: N/A';
 	}
 
 	/**spawns the notes and adds them to a array**/
-	public function genChart()
-	{
+	public function genChart() {
 		var CHART = PlayState.SONG;
 		trace(Assets.load(INI, Paths.ini('data/${CHART.song.toLowerCase()}/hard')));
 		for (section in CHART.notes)
-			for (note in section.sectionNotes)
-			{
+			for (note in section.sectionNotes) {
 				var stumtime = note[0];
 				var direction = note[1];
 				var suslen = note[2] / Conductor.stepCrochet;
@@ -189,8 +185,7 @@ class HUD extends FlxSpriteGroup
 				if (hitDaNote)
 					theNote.x = playerStrum.members[theNote.noteData].x;
 				lastNote = note;
-				for (sus in 0...Math.floor(suslen))
-				{
+				for (sus in 0...Math.floor(suslen)) {
 					lastNote = notes.members[notes.members.length - 1];
 					var susNote:Note = new Note(stumtime + (Conductor.stepCrochet * sus) + 50, direction % 4, lastNote, true);
 					susNote.mustPress = hitDaNote;
@@ -204,13 +199,11 @@ class HUD extends FlxSpriteGroup
 			}
 	}
 
-	public function countDown()
-	{
+	public function countDown() {
 		var imageMap:Map<Int, String> = [1 => "ready", 2 => "set", 3 => "go"];
 		var soundMap:Map<Int, String> = [0 => "intro3", 1 => "intro2", 2 => "intro1", 3 => "introGo"];
 
-		new FlxTimer().start(Conductor.crochet / 1000, function(timer:FlxTimer)
-		{
+		new FlxTimer().start(Conductor.crochet / 1000, function(timer:FlxTimer) {
 			var CountDownSprite = new FNFSprite();
 			if (soundMap.exists(COUNT))
 				FlxG.sound.play(Paths.sound('countdown/${soundMap.get(COUNT)}'));
@@ -221,8 +214,7 @@ class HUD extends FlxSpriteGroup
 				add(CountDownSprite);
 			FlxTween.tween(CountDownSprite, {alpha: 0}, Conductor.crochet / 1000, {
 				ease: FlxEase.cubeInOut,
-				onComplete: function(tween:FlxTween)
-				{
+				onComplete: function(tween:FlxTween) {
 					CountDownSprite.kill();
 					CountDownSprite.destroy();
 					remove(CountDownSprite, true);
@@ -233,8 +225,7 @@ class HUD extends FlxSpriteGroup
 		}, 5);
 	}
 
-	public function resyncVocals():Void
-	{
+	public function resyncVocals():Void {
 		voice.pause();
 
 		FlxG.sound.music.play();
@@ -243,35 +234,41 @@ class HUD extends FlxSpriteGroup
 		voice.play();
 	}
 
-	public function startSong()
-	{
-		voice.loadEmbedded(Assets.load(SOUND, Paths.voices(PlayState.SONG.song)));
+	public function startSong() {
+		voice.loadEmbedded(Assets.load(SOUND, Paths.voices(PlayState.SONG.song)),false,false,endsong);
 		FlxG.sound.list.add(voice);
 		voice.play();
 		FlxG.sound.playMusic(Assets.load(SOUND, Paths.inst(PlayState.SONG.song)), 1, false);
 		songStarted = true;
 	}
 
-	override function update(elapsed:Float)
-	{
+	override function update(elapsed:Float) {
 		super.update(elapsed);
 		var iconOffset:Int = 26;
+		if(voice != null && voice.length > 1000){
+			timeText.text = 'Time Left: ${FlxStringUtil.formatTime(Math.abs(Conductor.songPosition- voice.length)/1000)}';
+			timeText.screenCenter(X);
+		}
+		if(timeText.alpha <= 0)
+			FlxTween.tween(timeText,{alpha: 1},Conductor.crochet/1000*5,{ease: FlxEase.circOut, startDelay: Conductor.crochet/1000*5});
 
 		bfIcon.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
 		dadIcon.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (dadIcon.width - iconOffset);
 
 		if (Conductor.songPosition >= 0 && !songStarted)
 			startSong();
-		notes.forEach(function(note)
-		{
-			if (getNoteDiff(note) >= 900/GAME.camHUD.zoom)
+		notes.forEach(function(note) {
+			if (getNoteDiff(note) >= 900 / GAME.camHUD.zoom)
 				note.kill();
 			else
 				note.revive();
 
 			note.y = dadStrum.y - (Conductor.songPosition - note.strumTime) * (0.45 * FlxMath.roundDecimal(PlayState.SONG.speed, 2));
-			if (note.mustPress)
+			if (note.mustPress) {
 				note.y = playerStrum.y - (Conductor.songPosition - note.strumTime) * (0.45 * FlxMath.roundDecimal(PlayState.SONG.speed, 2));
+				if (note.tooLate)
+					PlayState.CURRENT.NoteMiss(note.noteData, note);
+			}
 			if (Conductor.songPosition - note.strumTime >= 0 && !note.mustPress)
 				PlayState.CURRENT.dadNoteHit(note);
 		}, true);
@@ -280,8 +277,7 @@ class HUD extends FlxSpriteGroup
 			endsong();
 	}
 
-	public function endsong()
-	{
+	public function endsong() {
 		trace("ENDING SONG");
 		FlxG.sound.music.stop();
 		voice.destroy();

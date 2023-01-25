@@ -279,6 +279,7 @@ class HUD extends FlxSpriteGroup {
 	public function endsong() {
 		trace("ENDING SONG");
 		FlxG.sound.music.stop();
+		FlxG.sound.music.kill();
 		voice.destroy();
 		FlxG.switchState(new MainMenuState());
 	}

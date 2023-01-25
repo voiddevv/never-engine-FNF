@@ -26,6 +26,7 @@ class PlayState extends MusicBeatState {
 	public var stage:Stage;
 	public var camHUD:FlxCamera = new FlxCamera();
 	public var camGame:FlxCamera;
+	public var campos = new FlxObject(0, 0, 1, 0);
 	public var UI:HUD;
 	public var defaultCamZoom:Float = 1.05;
 	// scoreText Shit
@@ -35,8 +36,6 @@ class PlayState extends MusicBeatState {
 	public var maxHealth = 2.0;
 	public var misses:Int = 0;
 	public var songscore:Int = 0;
-	public var campos = new FlxObject(0, 0, 1, 0);
-
 	// accuracy shit
 	public var totalNotes:Int = 0;
 	public var totalHit:Float = 0.0;

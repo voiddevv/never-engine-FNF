@@ -33,6 +33,7 @@ class MainMenu extends MusicBeatState {
 		menuGroup.y += 80;
 		add(menuGroup);
 		changeOption();
+		FlxG.sound.music.kill();
 		if (!FlxG.sound.music.playing)
 			FlxG.sound.playMusic(Assets.load(SOUND, Paths.music('freakyMenu')));
 	}

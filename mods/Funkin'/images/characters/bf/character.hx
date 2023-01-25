@@ -1,5 +1,6 @@
 function new()
 {
+	camOffset = new Vector2(-100,-150);
 	frames = Assets.load("SPARROW",Paths.getCharacter(curCharacter));
 	animation.addByPrefix('idle', 'BF idle dance', 24, false);
 	animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);

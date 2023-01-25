@@ -43,6 +43,7 @@
 
 	<haxelib name="flixel-leather" />
 	<haxelib name="hscript-improved" />
+	<haxelib name="console"/>
 
 	<!-- ______________________________ Haxedefines _____________________________ -->
 

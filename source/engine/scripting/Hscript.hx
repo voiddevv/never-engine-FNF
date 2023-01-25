@@ -1,4 +1,6 @@
 package engine.scripting;
+import lime.math.Vector2;
+import flixel.math.FlxPoint;
 import flixel.tweens.FlxTween;
 import flixel.FlxSprite;
 import flixel.text.FlxText;
@@ -37,6 +39,7 @@ class Hscript
 		interp.variables.set("FlxSprite",FlxSprite);
 		interp.variables.set("FlxText",FlxText);
 		interp.variables.set("FlxTween",FlxTween);
+		interp.variables.set("Vector2",Vector2);
 		interp.variables.set("Paths",Paths);
 		interp.variables.set("CoolUtil",CoolUtil);
 		interp.variables.set("Mem",Mem);

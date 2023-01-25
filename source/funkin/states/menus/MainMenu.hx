@@ -13,7 +13,7 @@ class MainMenu extends MusicBeatState {
 	var curItem = 0;
 	override function create() {
 		super.create();
-		if(FlxG.sound.music == null)
+		if(!FlxG.sound.music.playing)
 			FlxG.sound.playMusic(Assets.load(SOUND,Paths.music('freakyMenu')));
 		bg = new FNFSprite(0, 0).loadGraphic(Assets.load(IMAGE, Paths.image("menuBG")));
 		add(bg);

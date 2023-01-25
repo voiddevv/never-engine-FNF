@@ -1,5 +1,7 @@
 package funkin.states;
 
+import flixel.FlxObject;
+import flixel.math.FlxPoint;
 import flixel.math.FlxMath;
 import engine.scripting.Hscript;
 import sys.FileSystem;
@@ -33,6 +35,7 @@ class PlayState extends MusicBeatState {
 	public var maxHealth = 2.0;
 	public var misses:Int = 0;
 	public var songscore:Int = 0;
+	public var campos = new FlxObject(0, 0, 1, 0);
 
 	// accuracy shit
 	public var totalNotes:Int = 0;
@@ -63,15 +66,16 @@ class PlayState extends MusicBeatState {
 		Assets.load(SOUND, Paths.inst(SONG.song));
 		Assets.load(SOUND, Paths.voices(SONG.song));
 		trace("LOADING... SCRIPTS");
-		// for (script in FileSystem.readDirectory(FileSystem.absolutePath(Paths.getPath('data/${SONG.song.toLowerCase()}')))) {
-		// 	if (script.endsWith('.hx'))
-		// 		modChart.loadScript('data/${SONG.song.toLowerCase()}/${script.replace(".hx", "")}');
-		// }
+		for (script in FileSystem.readDirectory(FileSystem.absolutePath(Paths.getPath('data/${SONG.song.toLowerCase()}')))) {
+			if (script.endsWith('.hx'))
+				modChart.loadScript('data/${SONG.song.toLowerCase()}/${script.replace(".hx", "")}');
+		}
 	}
 
 	override function create() {
 		super.create();
 		camGame = FlxG.camera;
+		camGame.follow(campos, LOCKON, 0.04);
 		modChart.interp.scriptObject = this;
 		FlxG.cameras.add(camHUD, false);
 		camHUD.bgColor = 0;
@@ -79,6 +83,8 @@ class PlayState extends MusicBeatState {
 		bf = new Character(800, 430, "bf", true);
 		dad = new Character(100, 100, "dad");
 		stage = new Stage();
+		defaultCamZoom = stage.camZoom;
+		campos.setPosition(dad.getMidpoint().x, dad.getMidpoint().y);
 		UI = new HUD();
 		modChart.call('create');
 		add(stage);
@@ -90,10 +96,11 @@ class PlayState extends MusicBeatState {
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onRelease);
 		Conductor.onBeat.add(beatHit);
 		Conductor.onStep.add(stepHit);
+		Conductor.onSection.add(sectionHit);
 		modChart.call("createPost");
 	}
 
-	function beatHit(curBeat) {
+	public function beatHit(curBeat) {
 		modChart.call("beatHit", [curBeat]);
 		if (curBeat % 4 == 0) {
 			FlxG.camera.zoom += 0.015;
@@ -107,19 +114,30 @@ class PlayState extends MusicBeatState {
 		// 	dad.dance();
 	}
 
-	function stepHit(curStep) {
+	public function stepHit(curStep) {
 		modChart.call("stepHit", [curStep]);
 		if (UI.songStarted && FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20) {
 			UI.resyncVocals();
 		}
 	}
 
+	public function sectionHit(curSection:Int) {
+		modChart.call("sectionHit", [curSection]);
+		if (SONG.notes[curSection] != null) {
+			if (SONG.notes[curSection].mustHitSection)
+				campos.setPosition(bf.getMidpoint().x + bf.camOffset.x, bf.getMidpoint().y + bf.camOffset.y);
+			if (!SONG.notes[curSection].mustHitSection)
+				campos.setPosition(dad.getMidpoint().x + dad.camOffset.x, dad.getMidpoint().y + dad.camOffset.y);
+		}
+	}
+
 	override function update(elapsed:Float) {
 		super.update(elapsed);
+		health = FlxMath.bound(health, 0, 2);
 		if (camGame != null)
-			camGame.zoom = FlxMath.lerp(camGame.zoom, defaultCamZoom, FlxG.elapsed / (1 / 60) * 0.05);
+			camGame.zoom = FlxMath.lerp(camGame.zoom, defaultCamZoom, FlxG.elapsed / (1 / 60) * 0.06);
 		if (camHUD != null)
-			camHUD.zoom = FlxMath.lerp(camHUD.zoom, 1, FlxG.elapsed / (1 / 60) * 0.05);
+			camHUD.zoom = FlxMath.lerp(camHUD.zoom, 1, FlxG.elapsed / (1 / 60) * 0.06);
 		if (UI != null)
 			keyShit();
 	}
@@ -158,8 +176,8 @@ class PlayState extends MusicBeatState {
 	public function NoteMiss(direction:Int, note:Note) {
 		if (note == null)
 			return;
-		health -= 0.046;
-
+		health -= 0.023 * 3;
+		combo = 0;
 		var dirs:Array<String> = ['LEFT', 'DOWN', 'UP', 'RIGHT'];
 		misses++;
 		UI.scoreText.text = 'Misses: $misses | Score: ${PlayState.CURRENT.songscore} | Accureac: NO WOEK | Rank: N/A';
@@ -219,18 +237,6 @@ class PlayState extends MusicBeatState {
 		var binds:Array<String> = ["A", "S", "K", "L"];
 
 		var data = -1;
-
-		switch (evt.keyCode) // arrow keys
-		{
-			case 37:
-				data = 0;
-			case 40:
-				data = 1;
-			case 38:
-				data = 2;
-			case 39:
-				data = 3;
-		}
 
 		for (i in 0...binds.length) // binds
 		{

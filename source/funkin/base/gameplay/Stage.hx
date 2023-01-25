@@ -5,6 +5,7 @@ import flixel.group.FlxSpriteGroup;
 
 class Stage extends FlxSpriteGroup {
     var foreGround = new FlxSpriteGroup();
+    public var camZoom = 1.05;
     public var script:Hscript = new Hscript();
     public function new(stage:String = "stage") {
         super();

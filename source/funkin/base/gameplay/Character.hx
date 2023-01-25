@@ -1,5 +1,7 @@
 package funkin.base.gameplay;
 
+import lime.math.Vector2;
+import flixel.math.FlxPoint;
 import engine.scripting.Hscript;
 import flixel.util.FlxTimer;
 import flixel.math.FlxMath;
@@ -37,6 +39,7 @@ class Character extends FlxSprite
 	public var holdTimer:Float = 0;
 	public var singDur:Float = 4;
 	public var script:Hscript = new Hscript();
+	public var camOffset:Vector2 = new Vector2(-150,-150);
 
 	public function new(x:Float, y:Float, ?character:String = "dad", ?isPlayer:Bool = false)
 	{

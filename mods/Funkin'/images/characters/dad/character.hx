@@ -1,5 +1,7 @@
 function new()
 {
+	camOffset = new Vector2(100,-150);
+	singDur = 6.0;
 	frames = Assets.load("SPARROW",Paths.getCharacter(curCharacter));
 	animation.addByPrefix('idle', 'Dad idle dance', 24);
 	animation.addByPrefix('singUP', 'Dad Sing Note UP', 24);

@@ -63,7 +63,7 @@ class Assets {
 					return null;
 			}
 		} catch (e) {
-			trace("File Named " + '"${path}"' + " not Found");
+			Log.error("File Named " + '"${path}"' + " not Found");
 			return null;
 		}
 	}

@@ -237,6 +237,7 @@ class HUD extends FlxSpriteGroup {
 		FlxG.sound.list.add(voice);
 		voice.play();
 		FlxG.sound.playMusic(Assets.load(SOUND, Paths.inst(PlayState.SONG.song)), 1, false);
+		FlxG.sound.music.onComplete = endsong;
 		songStarted = true;
 	}
 
@@ -271,7 +272,7 @@ class HUD extends FlxSpriteGroup {
 				PlayState.CURRENT.dadNoteHit(note);
 		}, true);
 		Conductor.songPosition += elapsed * 1000;
-		if (songStarted && voice.playing && Conductor.songPosition >= voice.length)
+		if (songStarted && Conductor.songPosition >= voice.length)
 			endsong();
 	}
 

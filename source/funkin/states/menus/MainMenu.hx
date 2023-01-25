@@ -11,10 +11,10 @@ class MainMenu extends MusicBeatState {
 	var menuGroup:FlxSpriteGroup;
 	var items:Array<String> = ['story mode', "freeplay", 'options'];
 	var curItem = 0;
+
 	override function create() {
 		super.create();
-		if(!FlxG.sound.music.playing)
-			FlxG.sound.playMusic(Assets.load(SOUND,Paths.music('freakyMenu')));
+
 		bg = new FNFSprite(0, 0).loadGraphic(Assets.load(IMAGE, Paths.image("menuBG")));
 		add(bg);
 		menuGroup = new FlxSpriteGroup();
@@ -33,6 +33,8 @@ class MainMenu extends MusicBeatState {
 		menuGroup.y += 80;
 		add(menuGroup);
 		changeOption();
+		if (!FlxG.sound.music.playing)
+			FlxG.sound.playMusic(Assets.load(SOUND, Paths.music('freakyMenu')));
 	}
 
 	override function update(elapsed:Float) {
@@ -43,7 +45,6 @@ class MainMenu extends MusicBeatState {
 			changeOption(-1);
 		if (FlxG.keys.justPressed.ENTER)
 			selectItem();
-
 	}
 
 	public function changeOption(sex:Int = 0) {
@@ -60,7 +61,7 @@ class MainMenu extends MusicBeatState {
 	}
 
 	public function selectItem() {
-		switch(items[curItem]){
+		switch (items[curItem]) {
 			case 'freeplay':
 				FlxG.switchState(new FreePlay());
 		}

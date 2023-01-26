@@ -106,7 +106,9 @@ class HUD extends FlxSpriteGroup {
 			case "bad":
 				PlayState.CURRENT.songscore += 50;
 			case "shit":
-				GAME.health -= 0.05;
+				GAME.health -= 0.1;
+				PlayState.CURRENT.songscore -= 10;
+
 		}
 		var ratingSprite = new FlxSprite(400, 400).loadGraphic(Assets.load(IMAGE, Paths.image('ui/ratings/$ratingName')));
 		ratingSprite.screenCenter();

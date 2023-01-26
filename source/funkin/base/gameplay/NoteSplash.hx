@@ -1,7 +1,7 @@
 package funkin.base.gameplay;
 
 class NoteSplash extends FNFSprite {
-	static var id = 0;
+	public static var id = 0;
 
 	override function destroy() {
 		id--;

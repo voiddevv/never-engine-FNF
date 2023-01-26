@@ -53,14 +53,11 @@ class FPS extends TextField
 		while (times[0] < now - 1)
 			times.shift();
 
-		var mem:Float = Math.round(System.totalMemory / 1024 / 1024 * 100) / 100;
-
-		if (mem > memPeak)
-			memPeak = mem;
+		var mem:Float = Math.round(cast(System.totalMemory,Float) / 1024 / 1024 * 100 / 100);
 
 		if (visible)
 		{
-			text = 'VERSION: 0.0.1\n' + "FPS: " + times.length +" | DELTA " + FlxG.elapsed + "\nMEM: " + mem + " MB\nMEM peak: " + memPeak + " MB";
+			text = 'VERSION: 0.0.1\n' + "FPS: " + times.length+" | DELTA " + FlxG.elapsed + "\nMEM: " + mem + " MB\nMEM peak: " + memPeak + " MB";
 		}
 	}
 }

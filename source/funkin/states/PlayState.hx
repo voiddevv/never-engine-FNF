@@ -73,6 +73,7 @@ class PlayState extends MusicBeatState {
 
 	override function create() {
 		super.create();
+		NoteSplash.id = 0;
 		camGame = FlxG.camera;
 		camGame.follow(campos, LOCKON, 0.04);
 		modChart.interp.scriptObject = this;

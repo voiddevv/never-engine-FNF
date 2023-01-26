@@ -29,6 +29,7 @@ jobs:
           haxelib setup "%HAXELIB_ROOT%"
           haxelib install haxeui-flixel
           haxelib git flixel-leather https://github.com/Leather128/flixel
+          haxelib git console https://github.com/haxiomic/console.hx
           haxelib install flixel-ui
           haxelib git openfl https://github.com/openfl/openfl
           haxelib git hscript-improved https://github.com/YoshiCrafter29/hscript-improved

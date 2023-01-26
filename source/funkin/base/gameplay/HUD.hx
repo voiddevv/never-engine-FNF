@@ -96,9 +96,9 @@ class HUD extends FlxSpriteGroup {
 		var ratingName:String = ratmap.get(rating);
 		trace(rating);
 		trace("hit time is " + hitTime);
-		var splash = new NoteSplash(note.noteData);
 		switch (ratingName) {
 			case "sick":
+				var splash = new NoteSplash(note.noteData);
 				add(splash);
 				PlayState.CURRENT.songscore += 300;
 			case "good":

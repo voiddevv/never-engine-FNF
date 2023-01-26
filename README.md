@@ -1,5 +1,7 @@
 # never-engine-FNF
 HI welcome to the never engine github page updates and **useful** info on the engine and it's devlopment will beposted here and marked by a header
+# PLEASE READ
+report all issues to the github or make a pull request ok thanks :D
 # playtesting
 till i add action to playtest gitclone the source and then build ill add info on that below
 # buliling
@@ -10,5 +12,3 @@ then setup haxelib to do this run ``haxelib setup``
 then run the [BUILD-SCRIPTS](https://github.com/voiddevv/never-engine-FNF/tree/main/build%20Scripts)
 
 and then run ``lime test platform``
-
-

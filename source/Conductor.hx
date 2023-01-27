@@ -54,8 +54,9 @@ class Conductor {
 
 		if (lastStep != curStep && curStep > 0)
 			onStep.dispatch(curStep);
-		if (lastStep != curStep && curStep % 4 == 0)
+		if (lastStep != curStep && curStep % 4 == 0){
 			onBeat.dispatch(curBeat);
+		}
 		if (lastStep != curStep && curStep % 16 == 0)
 			onSection.dispatch(curSection);
 

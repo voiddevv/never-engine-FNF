@@ -1,5 +1,6 @@
 package;
 
+import openfl.filters.GlowFilter;
 import openfl.ui.Keyboard;
 import openfl.events.KeyboardEvent;
 import engine.FPS;

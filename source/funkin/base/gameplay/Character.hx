@@ -11,8 +11,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 
 using StringTools;
 
-typedef CharacterAnimData =
-{
+typedef CharacterAnimData = {
 	var name:String;
 	var nameinAtlas:String;
 	var fps:Int;
@@ -20,29 +19,27 @@ typedef CharacterAnimData =
 	var offset:Array<Float>;
 }
 
-typedef CharacterData =
-{
+typedef CharacterData = {
 	var flipX:Bool;
 	var icon:String;
 	var anims:Array<CharacterAnimData>;
 	var healthColor:String;
 }
 
-class Character extends FlxSprite
-{
+class Character extends FlxSprite {
 	public var animOffsets:Map<String, Array<Dynamic>>;
 	public var canDance:Bool = true;
 	public var isPlayer:Bool = false;
 	public var curCharacter:String = 'bf';
 	public var danceSteps:Array<String> = ["idle"];
 	public var danceIndex:Int = 0;
+	public var dances:Int = 0;
 	public var holdTimer:Float = 0;
 	public var singDur:Float = 4;
 	public var script:Hscript = new Hscript();
-	public var camOffset:Vector2 = new Vector2(-150,-150);
+	public var camOffset:Vector2 = new Vector2(-150, -150);
 
-	public function new(x:Float, y:Float, ?character:String = "dad", ?isPlayer:Bool = false)
-	{
+	public function new(x:Float, y:Float, ?character:String = "dad", ?isPlayer:Bool = false) {
 		animOffsets = new Map<String, Array<Float>>();
 		super(x, y);
 
@@ -53,24 +50,18 @@ class Character extends FlxSprite
 		script.loadScript('images/characters/$character/character');
 		script.call("new");
 		script.call("create");
-		trace(animation.getNameList());
-		dance();
-
-		if (isPlayer)
-		{
+		if (isPlayer) {
 			flipX = !flipX;
 
 			// Doesn't flip for BF, since his are already in the right place???
-			if (!curCharacter.startsWith('bf'))
-			{
+			if (!curCharacter.startsWith('bf')) {
 				// var animArray
 				var oldRight = animation.getByName('singRIGHT').frames;
 				animation.getByName('singRIGHT').frames = animation.getByName('singLEFT').frames;
 				animation.getByName('singLEFT').frames = oldRight;
 
 				// IF THEY HAVE MISS ANIMATIONS??
-				if (animation.getByName('singRIGHTmiss') != null)
-				{
+				if (animation.getByName('singRIGHTmiss') != null) {
 					var oldMiss = animation.getByName('singRIGHTmiss').frames;
 					animation.getByName('singRIGHTmiss').frames = animation.getByName('singLEFTmiss').frames;
 					animation.getByName('singLEFTmiss').frames = oldMiss;
@@ -79,18 +70,15 @@ class Character extends FlxSprite
 		}
 	}
 
-	override function update(elapsed:Float)
-	{
+	override function update(elapsed:Float) {
 		if (animation.curAnim == null)
 			return;
-		script.call('update',[elapsed]);
+		script.call('update', [elapsed]);
 
-		if (animation.curAnim.name.startsWith('sing'))
-		{
+		if (animation.curAnim.name.startsWith('sing')) {
 			holdTimer += elapsed;
 		}
-		if (holdTimer >= Conductor.stepCrochet * singDur * 0.001)
-		{
+		if (holdTimer >= Conductor.stepCrochet * singDur * 0.001) {
 			dance();
 			holdTimer = 0;
 		}
@@ -101,37 +89,34 @@ class Character extends FlxSprite
 	/**
 	 * idle bumping shit
 	 */
-	public function dance()
-	{
+	public function dance(force:Bool = false) {
 		if (!canDance)
 			return;
 		script.call('onDance');
 		script.call('dance');
-		playAnim('${danceSteps[danceIndex]}');
-		danceIndex = FlxMath.wrap(danceIndex + 1, 0, danceSteps.length);
+		// danceIndex = FlxMath.wrap(danceIndex + 1, 0, danceSteps.length);
+		playAnim('${danceSteps[danceIndex]}',force);
+		danceIndex ++;	
+		if(danceIndex >= danceSteps.length)
+			danceIndex = 0;
 	}
 
-	public function playAnim(AnimName:String, Force:Bool = false, time:Float = 0, Reversed:Bool = false, Frame:Int = 0):Void
-	{
+	public function playAnim(AnimName:String, Force:Bool = false, time:Float = 0, Reversed:Bool = false, Frame:Int = 0):Void {
 		animation.play(AnimName, Force, Reversed, Frame);
-		if(time > 0)
+		if (time > 0)
 			canDance = false;
-		new FlxTimer().start(time,function (tmr) {
+		new FlxTimer().start(time, function(tmr) {
 			canDance = true;
 		});
 
 		var daOffset = animOffsets.get(animation.curAnim.name);
-		if (animOffsets.exists(animation.curAnim.name))
-		{
+		if (animOffsets.exists(animation.curAnim.name)) {
 			offset.set(daOffset[0], daOffset[1]);
-		}
-		else
+		} else
 			offset.set(0, 0);
-
 	}
 
-	public function addOffset(name:String, x:Float = 0, y:Float = 0)
-	{
+	public function addOffset(name:String, x:Float = 0, y:Float = 0) {
 		animOffsets[name] = [x, y];
 	}
 }

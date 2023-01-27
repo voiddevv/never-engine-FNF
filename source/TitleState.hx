@@ -1,5 +1,8 @@
 package;
 
+import haxe.io.Bytes;
+import openfl.filters.BlurFilter;
+import openfl.filters.GlowFilter;
 import engine.api.Options;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -89,6 +92,10 @@ class TitleState extends MusicBeatState {
 
 	function startIntro() {
 		if (!initialized) {
+			FlxG.signals.preStateSwitch.add(function() {
+				MusicBeatState.lastStateName = MusicBeatState.stateName;
+			});
+			engine.Controls.init();
 			var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
 			diamond.persist = true;
 			diamond.destroyOnNoUse = false;
@@ -113,9 +120,7 @@ class TitleState extends MusicBeatState {
 
 			FlxG.sound.music.fadeIn(4, 0, 0.7);
 			Conductor.init();
-			trace("ready");
 		}
-
 		Conductor.changeBPM(102);
 		Conductor.onBeat.add(beatHit);
 		persistentUpdate = true;
@@ -127,16 +132,16 @@ class TitleState extends MusicBeatState {
 		add(bg);
 
 		logoBl = new FlxSprite(-150, -100);
-		logoBl.frames = Assets.load(SPARROW,Paths.image("logoBumpin"));
+		logoBl.frames = Assets.load(SPARROW, Paths.image("logoBumpin"));
 		logoBl.antialiasing = true;
 		logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
 		logoBl.animation.play('bump');
-		logoBl.updateHitbox();
+		logoBl.updateHitbox(); 
 		// logoBl.screenCenter();
 		// logoBl.color = FlxColor.BLACK;
 
 		gfDance = new FlxSprite(FlxG.width * 0.4, FlxG.height * 0.07);
-		gfDance.frames = Assets.load(SPARROW,Paths.image('gfDanceTitle'));
+		gfDance.frames = Assets.load(SPARROW, Paths.image('gfDanceTitle'));
 		gfDance.animation.addByIndices('danceLeft', 'gfDance', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
 		gfDance.animation.addByIndices('danceRight', 'gfDance', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
 		gfDance.antialiasing = true;
@@ -144,7 +149,7 @@ class TitleState extends MusicBeatState {
 		add(logoBl);
 
 		titleText = new FlxSprite(100, FlxG.height * 0.8);
-		titleText.frames = Assets.load(SPARROW,Paths.image("titleEnter"));
+		titleText.frames = Assets.load(SPARROW, Paths.image("titleEnter"));
 		titleText.animation.addByPrefix('idle', "Press Enter to Begin", 24);
 		titleText.animation.addByPrefix('press', "ENTER PRESSED", 24);
 		titleText.antialiasing = true;
@@ -169,7 +174,7 @@ class TitleState extends MusicBeatState {
 
 		credTextShit.visible = false;
 
-		ngSpr = new FlxSprite(0, FlxG.height * 0.52).loadGraphic(Assets.load(IMAGE,'newgrounds_logo'));
+		ngSpr = new FlxSprite(0, FlxG.height * 0.52).loadGraphic(Assets.load(IMAGE, 'newgrounds_logo'));
 		add(ngSpr);
 		ngSpr.visible = false;
 		ngSpr.setGraphicSize(Std.int(ngSpr.width * 0.8));
@@ -178,7 +183,6 @@ class TitleState extends MusicBeatState {
 		ngSpr.antialiasing = true;
 
 		FlxTween.tween(credTextShit, {y: credTextShit.y + 20}, 2.9, {ease: FlxEase.quadInOut, type: PINGPONG});
-
 
 		if (initialized)
 			skipIntro();
@@ -230,7 +234,7 @@ class TitleState extends MusicBeatState {
 			titleText.animation.play('press');
 
 			FlxG.camera.flash(FlxColor.WHITE, 1);
-			FlxG.sound.play(Assets.load(SOUND,Paths.sound('confirmMenu')), 0.7);
+			FlxG.sound.play(Assets.load(SOUND, Paths.sound('confirmMenu')), 0.7);
 
 			transitioning = true;
 			// FlxG.sound.music.stop();

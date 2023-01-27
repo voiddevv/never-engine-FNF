@@ -18,8 +18,9 @@ using StringTools;
 class PlayState extends MusicBeatState {
 	public var bf:Character;
 	public var dad:Character;
+	public var gf:Character;
 	public var modChart = new Hscript();
-
+	public static var SONGPLAYLIST:Array<String> = [];
 	public static var SONG:SwagSong;
 	public static var CURRENT:PlayState;
 
@@ -82,12 +83,14 @@ class PlayState extends MusicBeatState {
 		CURRENT = this;
 		bf = new Character(800, 430, "bf", true);
 		dad = new Character(100, 100, "dad");
+		gf = new Character(430, 100, "gf", false);
 		stage = new Stage();
 		defaultCamZoom = stage.camZoom;
 		campos.setPosition(dad.getMidpoint().x, dad.getMidpoint().y);
 		UI = new HUD();
 		modChart.call('create');
 		add(stage);
+		add(gf);
 		add(bf);
 		add(dad);
 		add(UI);
@@ -101,6 +104,7 @@ class PlayState extends MusicBeatState {
 	}
 
 	public function beatHit(curBeat) {
+		FlxG.watch.addQuick("curBeat", Conductor.curBeat);
 		modChart.call("beatHit", [curBeat]);
 		if (curBeat % 4 == 0) {
 			FlxG.camera.zoom += 0.015;
@@ -110,8 +114,8 @@ class PlayState extends MusicBeatState {
 			dad.dance();
 		if (!bf.animation.name.startsWith("sing"))
 			bf.dance();
-		// if (!gf.animation.name.startsWith("sing"))
-		// 	dad.dance();
+		if (!gf.animation.name.startsWith("sing"))
+			gf.dance();
 	}
 
 	public function stepHit(curStep) {

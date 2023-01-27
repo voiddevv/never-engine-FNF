@@ -15,6 +15,7 @@ import flixel.util.FlxTimer;
 import flixel.system.FlxSound;
 import flixel.math.FlxMath;
 import flixel.group.FlxSpriteGroup;
+
 class HUD extends FlxSpriteGroup {
 	public var dadStrum:Strum;
 	public var playerStrum:Strum;
@@ -31,6 +32,7 @@ class HUD extends FlxSpriteGroup {
 	public var ratingGroup:FlxSpriteGroup = new FlxSpriteGroup();
 	public var comboGroup:FlxSpriteGroup = new FlxSpriteGroup();
 	public var timeText:FlxText;
+
 	public function new() {
 		super();
 		Conductor.changeBPM(PlayState.SONG.bpm);
@@ -42,7 +44,7 @@ class HUD extends FlxSpriteGroup {
 		dadStrum = new Strum();
 		healthBarBG.screenCenter(X);
 		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8),
-			PlayState.CURRENT, "health", 0, 2);
+			PlayState.CURRENT, "health", PlayState.CURRENT.minHealth, PlayState.CURRENT.maxHealth);
 		healthBar.createFilledBar(FlxColor.RED, FlxColor.LIME);
 		scoreText = new FlxText(0, FlxG.height * 0.95, 0, '< Misses: N/A ~ Score: ${PlayState.CURRENT.songscore} ~ Accureac: NO WOEK ~ Rank: N/A >');
 		scoreText.setFormat(Paths.font('vcr.ttf'), 16, 0xFFFFFFFF, CENTER, OUTLINE, 0xFF000000, true);
@@ -70,6 +72,14 @@ class HUD extends FlxSpriteGroup {
 		Conductor.songPosition = -Conductor.crochet * 5;
 		countDown();
 		timeText.alpha = 0;
+		Conductor.onBeat.add(iconBounce);
+	}
+
+	public function iconBounce(a) {
+		bfIcon.scale.set(1.2, 1.2);
+		dadIcon.scale.set(1.2, 1.2);
+		bfIcon.updateHitbox();
+		dadIcon.updateHitbox();
 	}
 
 	function getNoteDiff(note:Note) {
@@ -108,7 +118,6 @@ class HUD extends FlxSpriteGroup {
 			case "shit":
 				GAME.health -= 0.1;
 				PlayState.CURRENT.songscore -= 10;
-
 		}
 		var ratingSprite = new FlxSprite(400, 400).loadGraphic(Assets.load(IMAGE, Paths.image('ui/ratings/$ratingName')));
 		ratingSprite.screenCenter();
@@ -170,7 +179,6 @@ class HUD extends FlxSpriteGroup {
 	/**spawns the notes and adds them to a array**/
 	public function genChart() {
 		var CHART = PlayState.SONG;
-		trace(Assets.load(INI, Paths.ini('data/${CHART.song.toLowerCase()}/hard')));
 		for (section in CHART.notes)
 			for (note in section.sectionNotes) {
 				var stumtime = note[0];
@@ -237,7 +245,7 @@ class HUD extends FlxSpriteGroup {
 	}
 
 	public function startSong() {
-		voice.loadEmbedded(Assets.load(SOUND, Paths.voices(PlayState.SONG.song)),false,false,endsong);
+		voice.loadEmbedded(Assets.load(SOUND, Paths.voices(PlayState.SONG.song)), false, false, endsong);
 		FlxG.sound.list.add(voice);
 		voice.play();
 		FlxG.sound.playMusic(Assets.load(SOUND, Paths.inst(PlayState.SONG.song)), 1, false);
@@ -247,21 +255,26 @@ class HUD extends FlxSpriteGroup {
 
 	override function update(elapsed:Float) {
 		super.update(elapsed);
+		dadIcon.scale.set(FlxMath.lerp(dadIcon.scale.x,1,FlxG.elapsed/(1/60)*0.2),FlxMath.lerp(dadIcon.scale.y,1,FlxG.elapsed/(1/60)*0.2));
+		bfIcon.scale.set(FlxMath.lerp(bfIcon.scale.x,1,FlxG.elapsed/(1/60)*0.2),FlxMath.lerp(bfIcon.scale.y,1,FlxG.elapsed/(1/60)*0.2));
 		var iconOffset:Int = 26;
-		if(voice != null && voice.length > 1000){
-			timeText.text = 'Time Left: ${FlxStringUtil.formatTime(Math.abs(Conductor.songPosition- voice.length)/1000)}';
+		if (voice != null && voice.length > 1000) {
+			timeText.text = 'Time Left: ${FlxStringUtil.formatTime(Math.abs(Conductor.songPosition - voice.length) / 1000)}';
 			timeText.screenCenter(X);
 		}
-		if(timeText.alpha <= 0)
-			FlxTween.tween(timeText,{alpha: 1},Conductor.crochet/1000*5,{ease: FlxEase.circOut, startDelay: Conductor.crochet/1000*5});
+		if (timeText.alpha <= 0)
+			FlxTween.tween(timeText, {alpha: 1}, Conductor.crochet / 1000 * 5, {ease: FlxEase.circOut, startDelay: Conductor.crochet / 1000 * 5});
 
 		bfIcon.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
 		dadIcon.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (dadIcon.width - iconOffset);
-
+		dadIcon.scale.set(FlxMath.lerp(dadIcon.scale.x,1,FlxG.elapsed/(1/60)*0.1),FlxMath.lerp(dadIcon.scale.y,1,FlxG.elapsed/(1/60)*0.1));
+		bfIcon.scale.set(FlxMath.lerp(bfIcon.scale.x,1,FlxG.elapsed/(1/60)*0.1),FlxMath.lerp(bfIcon.scale.y,1,FlxG.elapsed/(1/60)*0.1));
+		bfIcon.updateHitbox();
+		dadIcon.updateHitbox();
 		if (Conductor.songPosition >= 0 && !songStarted)
 			startSong();
 		notes.forEach(function(note) {
-			if (getNoteDiff(note) >= 900 / GAME.camHUD.zoom)
+			if (getNoteDiff(note) >= 1000 / GAME.camHUD.zoom)
 				note.kill();
 			else
 				note.revive();
@@ -285,6 +298,6 @@ class HUD extends FlxSpriteGroup {
 		FlxG.sound.music.stop();
 		FlxG.sound.music.kill();
 		voice.destroy();
-		FlxG.switchState(new MainMenuState());
+		FlxG.switchState(new MainMenu());
 	}
 }

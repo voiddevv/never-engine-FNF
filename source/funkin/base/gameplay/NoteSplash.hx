@@ -1,5 +1,7 @@
 package funkin.base.gameplay;
 
+import haxe.io.Bytes;
+
 class NoteSplash extends FNFSprite {
 	public static var id = 0;
 
@@ -17,7 +19,6 @@ class NoteSplash extends FNFSprite {
 		animation.addByPrefix("splash", 'note impact ${FlxG.random.int(1, 2)} ${colors[direction]}', 24, false);
 		setPosition(PlayState.CURRENT.UI.playerStrum.members[direction].x - 75, -50);
 		animation.play('splash');
-        trace(id);
 		animation.finishCallback = function(name:String) {
 			kill();
 			if (id != 1)

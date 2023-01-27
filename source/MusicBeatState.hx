@@ -8,23 +8,21 @@ import flixel.addons.ui.FlxUIState;
 import flixel.math.FlxRect;
 import flixel.util.FlxTimer;
 
-class MusicBeatState extends FlxUIState
-{
-	private var lastBeat:Float = 0;
-	private var lastStep:Float = 0;
-	//
-	private var curStep:Int = 0;
-	private var curBeat:Int = 0;
-	private var controls(get, never):Controls;
-	public static var stateName(get,never):String;
+using StringTools;
 
+class MusicBeatState extends FlxUIState {
+	private var controls(get, never):Controls;
+
+	public static var stateName(get, never):String;
+	public static var lastStateName:String = "NONE";
 
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
+
 	/**function that you can override for preloading**/
 	public function preload() {}
-	override function create()
-	{
+
+	override function create() {
 		trace(stateName);
 		Conductor.reset();
 
@@ -37,12 +35,12 @@ class MusicBeatState extends FlxUIState
 		FlxG.drawFramerate = FlxG.updateFramerate = Options.GAMEPLAY.get("FRAMERATE");
 	}
 
-	override function update(elapsed:Float)
-	{
+	override function update(elapsed:Float) {
 		super.update(elapsed);
 	}
 
 	static function get_stateName():String {
-		return Type.getClassName(Type.getClass(FlxG.state));
+		var daClassPath = Type.getClassName(Type.getClass(FlxG.state));
+		return daClassPath.split('.')[daClassPath.split('.').length - 1];
 	}
 }

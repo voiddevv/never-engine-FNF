@@ -1,5 +1,6 @@
 package engine.utills;
 
+import haxe.io.Bytes;
 import openfl.errors.Error;
 import openfl.text.Font;
 import flixel.system.FlxAssets;
@@ -18,6 +19,20 @@ using StringTools;
 
 class Assets {
 	public static var cache = new AssetCache();
+
+	public static function exists(name:String):Bool {
+		if (Paths.CURRENT_MOD != null)
+			return FileSystem.exists(Paths.getPath('name'));
+		return false;
+	}
+
+	public static function getdirs(dir:String):Array<String> {
+		if (Paths.CURRENT_MOD == null && !FileSystem.isDirectory(Paths.getPath(dir))) {
+			Log.error("None Found :C");
+			return [];
+		}
+		return FileSystem.readDirectory(Paths.getPath(dir));
+	}
 
 	public static function load(type:AssetType, path:String, ?curentCache:AssetCache):Dynamic {
 		try {
@@ -57,6 +72,10 @@ class Assets {
 				case SOUND:
 					if (!cache.exists(FileSystem.absolutePath(path)))
 						cache.add(path, Sound.fromFile(path));
+					return cache.get(path);
+				case GIF:
+					if (!cache.exists(path))
+						cache.add(path, Bytes.ofString(File.getContent(FileSystem.absolutePath(path))));
 					return cache.get(path);
 				default:
 					trace("no Asset Type found");

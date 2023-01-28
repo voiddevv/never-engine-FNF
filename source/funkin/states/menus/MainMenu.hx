@@ -1,5 +1,7 @@
 package funkin.states.menus;
-
+import flixel.effects.FlxFlicker;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
 import flixel.addons.ui.FlxUIInputText;
 import flixel.addons.display.FlxStarField.FlxStarField2D;
 import flixel.math.FlxMath;
@@ -33,9 +35,10 @@ class MainMenu extends MusicBeatState {
 		menuGroup.y += 80;
 		add(menuGroup);
 		changeOption();
-		FlxG.sound.music.kill();
-		if (!FlxG.sound.music.playing)
+		if (!FlxG.sound.music.playing) {
+			FlxG.sound.music.kill();
 			FlxG.sound.playMusic(Assets.load(SOUND, Paths.music('freakyMenu')));
+		}
 	}
 
 	override function update(elapsed:Float) {
@@ -62,9 +65,22 @@ class MainMenu extends MusicBeatState {
 	}
 
 	public function selectItem() {
-		switch (items[curItem]) {
-			case 'freeplay':
-				FlxG.switchState(new FreePlay());
-		}
+		menuGroup.forEach(function (item) {
+			if(item.ID != curItem)
+				FlxTween.tween(item,{alpha: 0},1);
+			else
+				FlxFlicker.flicker(item,1.4,0.06,true,true,function (w) {
+					switch (items[curItem]) {
+						//working on story mode
+						// case "story mode":
+						// 	FlxG.switchState(new StoryMenuState());
+						case 'freeplay':
+							FlxG.switchState(new FreePlay());
+					}
+				});
+
+
+		});
+		
 	}
 }

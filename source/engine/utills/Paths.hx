@@ -26,6 +26,9 @@ class Paths {
 	public static function xml(file:String) {
 		return getPath('$file.xml');
 	}
+	public static function gif(file:String) {
+		return getPath('$file.gif');
+	}
 
 	public static function ini(file:String) {
 		return getPath('$file.ini');

@@ -10,4 +10,5 @@ enum abstract AssetType (String) to String from String {
     var PACKER = "PACKER";
     var TEXTURE = "TEXTURE";
     var FONT = "FONT";
+    var GIF = "GIF";
 }

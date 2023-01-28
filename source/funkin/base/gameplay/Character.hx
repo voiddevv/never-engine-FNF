@@ -50,6 +50,7 @@ class Character extends FlxSprite {
 		script.loadScript('images/characters/$character/character');
 		script.call("new");
 		script.call("create");
+		loadCharacter();
 		if (isPlayer) {
 			flipX = !flipX;
 
@@ -95,9 +96,9 @@ class Character extends FlxSprite {
 		script.call('onDance');
 		script.call('dance');
 		// danceIndex = FlxMath.wrap(danceIndex + 1, 0, danceSteps.length);
-		playAnim('${danceSteps[danceIndex]}',force);
-		danceIndex ++;	
-		if(danceIndex >= danceSteps.length)
+		playAnim('${danceSteps[danceIndex]}', force);
+		danceIndex++;
+		if (danceIndex >= danceSteps.length)
 			danceIndex = 0;
 	}
 
@@ -114,6 +115,13 @@ class Character extends FlxSprite {
 			offset.set(daOffset[0], daOffset[1]);
 		} else
 			offset.set(0, 0);
+	}
+
+	public function loadCharacter() {
+		var json:CharacterData = Assets.load(JSON, Paths.json('images/characters/${curCharacter}/character'));
+		if (json == null)
+			return;
+		trace(json);
 	}
 
 	public function addOffset(name:String, x:Float = 0, y:Float = 0) {

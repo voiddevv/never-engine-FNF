@@ -1,0 +1,15 @@
+{
+    "flipX": false,
+    "icon": "dad",
+    "healthColor": "0xFFFFFFFF",
+    "anims":[
+        {
+            "fps":24,
+            "name":"idle",
+            "nameinAtlas":"Dad idle dance",
+            "looped": false,
+            "offset":[0.0,0.0]
+        }
+    ]
+
+}

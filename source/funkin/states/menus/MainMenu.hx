@@ -1,4 +1,5 @@
 package funkin.states.menus;
+
 import flixel.effects.FlxFlicker;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
@@ -65,22 +66,19 @@ class MainMenu extends MusicBeatState {
 	}
 
 	public function selectItem() {
-		menuGroup.forEach(function (item) {
-			if(item.ID != curItem)
-				FlxTween.tween(item,{alpha: 0},1);
+		menuGroup.forEach(function(item) {
+			if (item.ID != curItem)
+				FlxTween.tween(item, {alpha: 0}, 1);
 			else
-				FlxFlicker.flicker(item,1.4,0.06,true,true,function (w) {
+				FlxFlicker.flicker(item, 1.4, 0.06, true, true, function(w) {
 					switch (items[curItem]) {
-						//working on story mode
-						// case "story mode":
-						// 	FlxG.switchState(new StoryMenuState());
+						// working on story mode
+						case "story mode":
+							FlxG.switchState(new StoryMenuState());
 						case 'freeplay':
 							FlxG.switchState(new FreePlay());
 					}
 				});
-
-
 		});
-		
 	}
 }

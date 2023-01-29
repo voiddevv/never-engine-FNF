@@ -2,7 +2,11 @@
     "songs": [
         {"name": "bopeebo","icon": "dad","bpm": "102","diffs": ["easy","normal","hard"]},
         {"name": "fresh","icon": "dad","bpm": "102","diffs": ["easy","normal","hard"]},
-        {"name": "dadbattle","icon": "dad","bpm": "102","diffs": ["easy","normal","hard"]}
+        {"name": "dadbattle","icon": "dad","bpm": "102","diffs": ["easy","normal","hard"]},
+        {"name": "too-slow","icon": "dad","bpm": "179","diffs": ["hard"]},
+        {"name": "you-cant-run","icon": "dad","bpm": "179","diffs": ["hard"]}
+
+
         
     ]
 }

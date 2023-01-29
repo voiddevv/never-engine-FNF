@@ -1,5 +1,6 @@
 package;
 
+import openfl.Lib;
 import haxe.io.Bytes;
 import openfl.filters.BlurFilter;
 import openfl.filters.GlowFilter;
@@ -96,6 +97,7 @@ class TitleState extends MusicBeatState {
 				MusicBeatState.lastStateName = MusicBeatState.stateName;
 			});
 			engine.Controls.init();
+			FlxG.fixedTimestep = false;
 			var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
 			diamond.persist = true;
 			diamond.destroyOnNoUse = false;

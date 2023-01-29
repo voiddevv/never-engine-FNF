@@ -42,6 +42,7 @@ class Conductor {
 	}
 
 	public static function reset() {
+		songPosition = 0;
 		onSection.removeAll();
 		onBeat.removeAll();
 		onStep.removeAll();

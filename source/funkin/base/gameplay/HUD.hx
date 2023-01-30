@@ -210,7 +210,10 @@ class HUD extends FlxSpriteGroup {
 				notes.add(theNote);
 			}
 		trace("parsed chart in " + Std.string(Sys.cpuTime() - oldTime));
+		for(section in PlayState.SONG.notes)
+			section.sectionNotes = null;
 		CHART = null;
+		trace(PlayState.SONG.notes);
 	}
 
 	public function countDown() {
@@ -298,9 +301,8 @@ class HUD extends FlxSpriteGroup {
 			endsong();
 	}
 	public function sectionHit(section:Int) {
-		if(section >0)
-			PlayState.SONG.notes[section-1] = null; 
-		trace(PlayState.SONG.notes);
+		if(PlayState.SONG.notes[section]!= null && PlayState.SONG.notes[section].changeBPM)
+			Conductor.changeBPM(PlayState.SONG.notes[section].bpm);
 	}
 
 	public function endsong() {

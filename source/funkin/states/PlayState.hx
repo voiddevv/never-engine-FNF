@@ -172,7 +172,6 @@ class PlayState extends MusicBeatState {
 		UI.playerStrum.members[note.noteData].playAnim("confirm", true);
 		UI.notes.remove(note, true);
 		note.wasGoodHit = true;
-		UI.popUpScore(note);
 		note.kill();
 		note.destroy();
 	}

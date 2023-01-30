@@ -135,8 +135,10 @@ class HUD extends FlxSpriteGroup {
 		FlxTween.tween(ratingSprite, {alpha: 0}, 0.2, {
 			startDelay: Conductor.crochet / 1000,
 			onComplete: function(twe) {
-				ratingSprite.kill();
 				remove(ratingSprite, true);
+				ratingSprite.kill();
+				ratingSprite.destroy();
+
 			}
 		});
 		var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Paths.image('combo'));
@@ -148,8 +150,9 @@ class HUD extends FlxSpriteGroup {
 		FlxTween.tween(comboSpr, {alpha: 0}, 0.2, {
 			startDelay: Conductor.crochet / 1000,
 			onComplete: function(twe) {
-				ratingSprite.kill();
 				remove(comboSpr, true);
+				comboSpr.kill();
+				comboSpr.destroy();
 			}
 		});
 
@@ -167,8 +170,9 @@ class HUD extends FlxSpriteGroup {
 			FlxTween.tween(numScore, {alpha: 0}, 0.2, {
 				startDelay: Conductor.crochet / 1000,
 				onComplete: function(twe) {
-					numScore.kill();
 					remove(numScore, true);
+					numScore.kill();
+					numScore.destroy();
 				}
 			});
 		}
@@ -209,8 +213,18 @@ class HUD extends FlxSpriteGroup {
 				}
 				notes.add(theNote);
 			}
+		var oldNote:Note = null;
+		for (note in notes.members) {
+			if (oldNote != null && oldNote.noteData == note.noteData && oldNote.strumTime == note.strumTime) {
+				trace("stack Note");
+				notes.remove(note, true);
+				note.kill();
+				note.destroy();
+			}
+			oldNote = note;
+		}
 		trace("parsed chart in " + Std.string(Sys.cpuTime() - oldTime));
-		for(section in PlayState.SONG.notes)
+		for (section in PlayState.SONG.notes)
 			section.sectionNotes = null;
 		CHART = null;
 		trace(PlayState.SONG.notes);
@@ -300,8 +314,9 @@ class HUD extends FlxSpriteGroup {
 		if (songStarted && Conductor.songPosition >= voice.length)
 			endsong();
 	}
+
 	public function sectionHit(section:Int) {
-		if(PlayState.SONG.notes[section]!= null && PlayState.SONG.notes[section].changeBPM)
+		if (PlayState.SONG.notes[section] != null && PlayState.SONG.notes[section].changeBPM)
 			Conductor.changeBPM(PlayState.SONG.notes[section].bpm);
 	}
 

@@ -95,7 +95,6 @@ class PlayState extends MusicBeatState {
 		if (data == -1)
 			return;
 		keys[data] = false;
-		keysPressed[data] = false;
 	}
 
 	override function update(elapsed:Float) {

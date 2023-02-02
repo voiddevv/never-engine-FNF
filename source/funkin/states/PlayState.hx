@@ -1,5 +1,7 @@
 package funkin.states;
 
+import cpp.Native;
+import flixel.system.FlxSound;
 import flixel.input.FlxInput.FlxInputState;
 import openfl.events.KeyboardEvent;
 import flixel.input.keyboard.FlxKey;
@@ -13,6 +15,15 @@ class PlayState extends MusicBeatState {
 	public var UI:HUD;
 	public var camHUD = new FlxCamera();
 	public var combo:Int = 0;
+	public var voice = new FlxSound();
+	public var musicStarted:Bool = false;
+
+	override function preload() {
+		super.preload();
+
+		FlxG.sound.playMusic(Assets.load(SOUND, Paths.inst(SONG.song)), 0, false);
+		Assets.load(SOUND, Paths.voices(SONG.song));
+	}
 
 	override function create() {
 		super.create();
@@ -23,7 +34,10 @@ class PlayState extends MusicBeatState {
 		UI.cameras = [camHUD];
 		FlxG.cameras.add(camHUD);
 
-		engine.Controls.onJustPress.add(onJustPress);
+		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onPress);
+		FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onRelese);
+
+		Conductor.onStep.add(stepHit);
 	}
 
 	public function dadNoteHit(note:Note) {
@@ -47,25 +61,41 @@ class PlayState extends MusicBeatState {
 	}
 
 	var binds:Array<String> = ["A", "S", "K", "L"];
+	var keys:Array<Bool> = [false, false, false, false];
+
 	var closeNotes:Array<Note> = [];
 
-	public function onJustPress(key:Int) {
+	public function onPress(event:KeyboardEvent) {
+		closeNotes = [];
+		for (note in UI.notes.members)
+			if (note.canBeHit && note.mustPress && !note.tooLate && !note.isSustainNote)
+				closeNotes.push(note);
+		closeNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
 		var data = -1;
-
-		data = binds.indexOf(FlxKey.toStringMap.get(key));
-
+		data = binds.indexOf(FlxKey.toStringMap.get(event.keyCode));
 		if (data == -1)
 			return;
+		if (!keys[data]) {
+			if (closeNotes[0] != null && closeNotes[0].noteData == data)
+				playerNoteHit(closeNotes[0]);
+		}
 
-		if (closeNotes[0] == null)
+		keys[data] = true;
+		if (closeNotes.length > 2)
+			for (note in closeNotes) {
+				if (keys[note.noteData] && note.strumTime == closeNotes[0].strumTime && note.noteData != closeNotes[0].noteData)
+					playerNoteHit(note);
+				keys[note.noteData] = false;
+			}
+	}
+
+	public function onRelese(event:KeyboardEvent) {
+		var data = -1;
+		data = binds.indexOf(FlxKey.toStringMap.get(event.keyCode));
+		if (data == -1)
 			return;
-
-		if (data != closeNotes[0].noteData || closeNotes[0].isSustainNote)
-			return;
-
-		trace('data: $data');
-
-		playerNoteHit(closeNotes[0]);
+		keys[data] = false;
+		keysPressed[data] = false;
 	}
 
 	override function update(elapsed:Float) {
@@ -73,13 +103,38 @@ class PlayState extends MusicBeatState {
 		keysShit();
 	}
 
+	public function syncMusic() {
+		FlxG.sound.music.pause();
+		voice.pause();
+		Conductor.songPosition = FlxG.sound.music.time;
+		voice.time = FlxG.sound.music.time;
+		FlxG.sound.music.resume();
+		voice.resume();
+	}
+
+	public function stepHit(step:Int) {
+		if (musicStarted && Math.abs(Conductor.songPosition - FlxG.sound.music.time) >= 20)
+			syncMusic();
+	}
+
+	public function startMusic() {
+		FlxG.sound.playMusic(Assets.load(SOUND, Paths.inst(SONG.song)), 1, false);
+		voice.loadEmbedded(Paths.voices(SONG.song), false, false);
+		FlxG.sound.list.add(voice);
+		voice.play();
+		syncMusic();
+		musicStarted = true;
+	}
+
+	var susNotes:Array<Note> = [];
+
 	function keysShit() {
 		// sort shit
-		closeNotes = [];
+		susNotes = [];
 		for (note in UI.notes)
-			if (note.canBeHit && note.mustPress && !note.tooLate)
-				closeNotes.push(note);
-		closeNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
+			if (note.canBeHit && note.mustPress && !note.tooLate && note.isSustainNote)
+				susNotes.push(note);
+		susNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
 		// da sus shit
 		var keys:Array<FlxKey> = [];
 
@@ -97,14 +152,18 @@ class PlayState extends MusicBeatState {
 			FlxG.keys.checkStatus(keys[2], RELEASED),
 			FlxG.keys.checkStatus(keys[3], RELEASED)
 		];
+		FlxG.watch.addQuick("Keys Pressed", keysPressed);
 		UI.playerStrum.forEach(function(spr) {
 			if (keysPressed[spr.ID] && spr.animation.curAnim.name != 'confirm')
-				spr.playAnim('pressed',true);
+				spr.playAnim('pressed', true);
 			if (keysRelsesed[spr.ID])
 				spr.playAnim('idle');
 		});
 
-		if (closeNotes.length > 0 && closeNotes[0].isSustainNote && Conductor.songPosition - closeNotes[0].strumTime >= 0)
-			playerNoteHit(closeNotes[0]);
+		if (susNotes.length > 0
+			&& susNotes[0].isSustainNote
+			&& keysPressed[susNotes[0].noteData] == true
+			&& Conductor.songPosition - susNotes[0].strumTime >= 0)
+			playerNoteHit(susNotes[0]);
 	}
 }

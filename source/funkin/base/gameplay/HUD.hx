@@ -37,6 +37,7 @@ class HUD extends FlxSpriteGroup {
 		add(playerStrum);
 		add(notes);
 		genChart();
+		countDown();
 	}
 
 	function getNoteDiff(note:Note) {
@@ -99,16 +100,18 @@ class HUD extends FlxSpriteGroup {
 				note.kill();
 			else
 				note.revive();
-		},true);
+		}, true);
 		notes.forEachAlive(function(note:Note) {
 			note.y = dadStrum.y - (Conductor.songPosition - note.strumTime) * (0.45 * FlxMath.roundDecimal(PlayState.SONG.speed, 2));
-			if (note.mustPress) note.y = dadStrum.y - (Conductor.songPosition - note.strumTime) * (0.45 * FlxMath.roundDecimal(PlayState.SONG.speed, 2));
-			if(!note.mustPress && getNoteDiff(note) >= 0)
+			if (note.mustPress)
+				note.y = dadStrum.y - (Conductor.songPosition - note.strumTime) * (0.45 * FlxMath.roundDecimal(PlayState.SONG.speed, 2));
+			if (!note.mustPress && getNoteDiff(note) >= 0)
 				PlayState.CURRENT.dadNoteHit(note);
-		},true);
+		}, true);
 	}
 
 	public function countDown() {
+		Conductor.songPosition = -Conductor.crochet*5;
 		var imageMap:Map<Int, String> = [1 => "ready", 2 => "set", 3 => "go"];
 		var soundMap:Map<Int, String> = [0 => "intro3", 1 => "intro2", 2 => "intro1", 3 => "introGo"];
 
@@ -131,6 +134,8 @@ class HUD extends FlxSpriteGroup {
 			});
 
 			COUNT++;
+			if (COUNT == 5)
+				PlayState.CURRENT.startMusic();
 		}, 5);
 	}
 }

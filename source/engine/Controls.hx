@@ -1,4 +1,7 @@
 package engine;
+
+import flixel.input.keyboard.FlxKeyboard;
+import openfl.ui.Keyboard;
 import openfl.events.KeyboardEvent;
 import flixel.util.FlxSignal.FlxTypedSignal;
 
@@ -28,5 +31,17 @@ class Controls {
 		onRelsase.dispatch(event.keyCode);
 	}
 
-	public static function update() {}
+	public static function getKeyName(keyCode:Int) {
+		@:privateAccess {
+			var balls:Array<String> = Type.getClassFields(Keyboard);
+			var map:Map<String, String> = [];
+
+			for (name in balls) {
+				map.set(Std.string(Reflect.getProperty(Keyboard, name)), name);
+				trace(Std.string(Reflect.getProperty(Keyboard, name)));
+			}
+			trace(map);
+			return map.get(Std.string(keyCode));
+		}
+	}
 }

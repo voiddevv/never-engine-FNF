@@ -23,9 +23,9 @@ class Main extends Sprite
 		switch (event.keyCode){
 			case Keyboard.F5:
 				FlxG.resetState();
-			case Keyboard.F1:
-				if(MusicBeatState.stateName.endsWith('PlayState'))
-					PlayState.CURRENT.UI.endsong();
+			// case Keyboard.F1:
+			// 	if(MusicBeatState.stateName.endsWith('PlayState'))
+			// 		PlayState.CURRENT.UI.endsong();
 		}
 	}
 }

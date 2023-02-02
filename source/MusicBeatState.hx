@@ -1,5 +1,6 @@
 package;
 
+import flixel.util.FlxSignal.FlxTypedSignal;
 import engine.api.Options;
 import Conductor.BPMChangeEvent;
 import flixel.FlxG;
@@ -15,6 +16,7 @@ class MusicBeatState extends FlxUIState {
 
 	public static var stateName(get, never):String;
 	public static var lastStateName:String = "NONE";
+	public static var onFixedUpdate:FlxTypedSignal<Float->Void> = new FlxTypedSignal();
 
 	inline function get_controls():Controls
 		return PlayerSettings.player1.controls;
@@ -23,6 +25,9 @@ class MusicBeatState extends FlxUIState {
 	public function preload() {}
 
 	override function create() {
+		new FlxTimer().start(1/60,function (timer) {
+			onFixedUpdate.dispatch(1/60);
+		},0);
 		trace(stateName);
 		Conductor.reset();
 

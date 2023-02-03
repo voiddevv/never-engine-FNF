@@ -1,5 +1,8 @@
 package funkin.base.gameplay;
 
+import lime.tools.Command;
+import haxe.ds.HashMap;
+import flixel.group.FlxGroup.FlxTypedGroup;
 import openfl.media.Sound;
 import lime.media.openal.AL;
 import flixel.util.FlxStringUtil;
@@ -24,6 +27,7 @@ class HUD extends FlxSpriteGroup {
 	public var notes = new FlxTypedSpriteGroup<Note>();
 	public var dadStrum = new Strum();
 	public var playerStrum = new Strum();
+	public var ratingGroup:FlxTypedSpriteGroup<FlxSprite> = new FlxTypedSpriteGroup();
 
 	public function new() {
 		super();
@@ -33,6 +37,8 @@ class HUD extends FlxSpriteGroup {
 		dadStrum.x -= 350;
 		playerStrum.x += 350;
 		dadStrum.y = playerStrum.y = 25;
+		ratingGroup.scale.set(0.5, 0.5);
+		add(ratingGroup);
 		add(dadStrum);
 		add(playerStrum);
 		add(notes);
@@ -109,21 +115,77 @@ class HUD extends FlxSpriteGroup {
 				PlayState.CURRENT.dadNoteHit(note);
 		}, true);
 	}
-	public var ratings:Array<Array<Dynamic>> = [[22.5,"sick"],[45,"sick"],[90,"good"],[135,"bad"],[180,"shit"]];
-	public function popupScore(note:Note) {
-		if(note.isSustainNote)
-			return;
-		trace(Math.abs(getNoteDiff(note)));
-		for(i in ratings)
-			if(Math.abs(getNoteDiff(note)) <= i[0]){
-				trace(i[1]);
+
+	public var ratings:Array<Array<Dynamic>> = [[22.5, "sick"], [45, "sick"], [90, "good"], [135, "bad"]];
+
+	public function getrating(note:Note) {
+		for (i in ratings)
+			if (Math.abs(getNoteDiff(note)) <= i[0]) {
+				return i[1];
 				break;
 			}
-		
+		return "shit";
+	}
+
+	public var times:Array<Float> = [];
+
+	public function popupScore(note:Note) {
+		if (note.isSustainNote)
+			return;
+		var ratingName:String = getrating(note);
+		var rating = new FlxSprite(0, 0);
+		rating.loadGraphic(Assets.load(IMAGE, Paths.image('ui/ratings/funkin/$ratingName')));
+		trace(ratingName);
+		times.push(Math.abs(getNoteDiff(note)));
+		var sum:Float = 0;
+		for (i in times) {
+			sum += i;
+			var avg:Float = 0;
+			avg = sum / times.length;
+			FlxG.watch.addQuick("avg hitime", avg);
+		}
+		PlayState.CURRENT.combo++;
+		var comboArray = CoolUtil.getcomboArray(PlayState.CURRENT.combo);
+		for (i in 0...comboArray.length) {
+			var numSprite = new FlxSprite();
+			numSprite.loadGraphic(Assets.load(IMAGE, Paths.image('ui/numbers/${comboArray[i]}')));
+			numSprite.scale.set(0.5, 0.5);
+			numSprite.updateHitbox();
+			numSprite.screenCenter();
+			numSprite.y += 125;
+			numSprite.acceleration.y = FlxG.random.int(200, 300);
+			numSprite.velocity.y -= FlxG.random.int(140, 160);
+			numSprite.velocity.x = FlxG.random.float(-5, 5);
+			add(numSprite);
+			numSprite.x += 50 * i;
+			FlxTween.tween(numSprite, {alpha: 0}, 0.2, {
+				startDelay: Conductor.crochet / 1000,
+				onComplete: function(tween) {
+					ratingGroup.remove(rating, true);
+					rating.kill();
+				}
+			});
+		}
+		trace(comboArray);
+		rating.scale.set(0.7,0.7);
+		rating.updateHitbox();
+		rating.screenCenter();
+		ratingGroup.add(rating);
+		rating.acceleration.y = 550;
+		rating.velocity.y -= FlxG.random.int(140, 175);
+		rating.velocity.x -= FlxG.random.int(0, 10);
+
+		FlxTween.tween(rating, {alpha: 0}, 0.2, {
+			startDelay: Conductor.stepCrochet / 1000,
+			onComplete: function(tween) {
+				ratingGroup.remove(rating, true);
+				rating.kill();
+			}
+		});
 	}
 
 	public function countDown() {
-		Conductor.songPosition = -Conductor.crochet*5;
+		Conductor.songPosition = -Conductor.crochet * 5;
 		var imageMap:Map<Int, String> = [1 => "ready", 2 => "set", 3 => "go"];
 		var soundMap:Map<Int, String> = [0 => "intro3", 1 => "intro2", 2 => "intro1", 3 => "introGo"];
 

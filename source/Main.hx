@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxSprite;
 import openfl.filters.GlowFilter;
 import openfl.ui.Keyboard;
 import openfl.events.KeyboardEvent;
@@ -18,6 +19,7 @@ class Main extends Sprite
 		addChild(new FPS(10, 3, 0xFFFFFF));
 		#end
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN,onPress);
+		FlxSprite.defaultAntialiasing = true;
 	}
 	public function onPress(event:KeyboardEvent) {
 		switch (event.keyCode){

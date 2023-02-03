@@ -24,7 +24,7 @@ class CoolUtil
 		}
 		return dumbArray;
 	}
-	public static function getcomboArray(combo:Int) {
+	public static function getcomboArray(combo:Int):Array<String> {
 		return Std.string(combo).split("");
 	}
 

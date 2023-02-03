@@ -109,6 +109,18 @@ class HUD extends FlxSpriteGroup {
 				PlayState.CURRENT.dadNoteHit(note);
 		}, true);
 	}
+	public var ratings:Array<Array<Dynamic>> = [[22.5,"sick"],[45,"sick"],[90,"good"],[135,"bad"],[180,"shit"]];
+	public function popupScore(note:Note) {
+		if(note.isSustainNote)
+			return;
+		trace(Math.abs(getNoteDiff(note)));
+		for(i in ratings)
+			if(Math.abs(getNoteDiff(note)) <= i[0]){
+				trace(i[1]);
+				break;
+			}
+		
+	}
 
 	public function countDown() {
 		Conductor.songPosition = -Conductor.crochet*5;

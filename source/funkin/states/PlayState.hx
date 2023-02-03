@@ -34,7 +34,7 @@ class PlayState extends MusicBeatState {
 		UI.cameras = [camHUD];
 		FlxG.cameras.add(camHUD);
 
-		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onPress);
+		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, handleInput);
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_UP, onRelese);
 
 		Conductor.onStep.add(stepHit);
@@ -54,6 +54,7 @@ class PlayState extends MusicBeatState {
 	public function playerNoteHit(note:Note) {
 		UI.playerStrum.members[note.noteData].playAnim("confirm", true);
 		note.wasGoodHit = true;
+		UI.popupScore(note);
 		note.kill();
 		note.destroy();
 		UI.notes.remove(note, true);
@@ -65,28 +66,131 @@ class PlayState extends MusicBeatState {
 
 	var closeNotes:Array<Note> = [];
 
-	public function onPress(event:KeyboardEvent) {
-		closeNotes = [];
-		for (note in UI.notes.members)
-			if (note.canBeHit && note.mustPress && !note.tooLate && !note.isSustainNote)
-				closeNotes.push(note);
-		closeNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
+	private function releaseInput(evt:KeyboardEvent):Void // handles releases
+	{
+		@:privateAccess
+		var key = FlxKey.toStringMap.get(evt.keyCode);
+
+		var binds:Array<String> = [
+			FlxG.save.data.leftBind,
+			FlxG.save.data.downBind,
+			FlxG.save.data.upBind,
+			FlxG.save.data.rightBind
+		];
+
 		var data = -1;
-		data = binds.indexOf(FlxKey.toStringMap.get(event.keyCode));
+
+		switch (evt.keyCode) // arrow keys
+		{
+			case 37:
+				data = 0;
+			case 40:
+				data = 1;
+			case 38:
+				data = 2;
+			case 39:
+				data = 3;
+		}
+
+		for (i in 0...binds.length) // binds
+		{
+			if (binds[i].toLowerCase() == key.toLowerCase())
+				data = i;
+		}
+
 		if (data == -1)
 			return;
-		if (!keys[data]) {
-			if (closeNotes[0] != null && closeNotes[0].noteData == data)
-				playerNoteHit(closeNotes[0]);
+
+		keys[data] = false;
+	}
+
+	public var closestNotes:Array<Note> = [];
+
+	private function handleInput(evt:KeyboardEvent):Void { // this actually handles press inputs
+		// first convert it from openfl to a flixel key code
+		// then use FlxKey to get the key's name based off of the FlxKey dictionary
+		// this makes it work for special characters
+
+		@:privateAccess
+		var key = FlxKey.toStringMap.get(evt.keyCode);
+
+		var binds:Array<String> = ["A","S","K","L"];
+
+		var data = -1;
+
+		switch (evt.keyCode) // arrow keys
+		{
+			case 37:
+				data = 0;
+			case 40:
+				data = 1;
+			case 38:
+				data = 2;
+			case 39:
+				data = 3;
+		}
+
+		for (i in 0...binds.length) // binds
+		{
+			if (binds[i].toLowerCase() == key.toLowerCase())
+				data = i;
+		}
+		if (data == -1) {
+			trace("couldn't find a keybind with the code " + key);
+			return;
+		}
+		if (keys[data]) {
+			trace("ur already holding " + key);
+			return;
 		}
 
 		keys[data] = true;
-		if (closeNotes.length > 2)
-			for (note in closeNotes) {
-				if (keys[note.noteData] && note.strumTime == closeNotes[0].strumTime && note.noteData != closeNotes[0].noteData)
-					playerNoteHit(note);
-				keys[note.noteData] = false;
+		closestNotes = [];
+
+		UI.notes.forEachAlive(function(daNote:Note) {
+			if (daNote.canBeHit && daNote.mustPress && !daNote.wasGoodHit)
+				closestNotes.push(daNote);
+		}); // Collect notes that can be hit
+
+		closestNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
+
+		var dataNotes = [];
+		for (i in closestNotes)
+			if (i.noteData == data && !i.isSustainNote)
+				dataNotes.push(i);
+
+		trace("notes able to hit for " + key.toString() + " " + dataNotes.length);
+
+		if (dataNotes.length != 0) {
+			var coolNote = null;
+
+			for (i in dataNotes) {
+				coolNote = i;
+				break;
 			}
+
+			if (dataNotes.length > 1) // stacked notes or really close ones
+			{
+				for (i in 0...dataNotes.length) {
+					if (i == 0) // skip the first note
+						continue;
+
+					var note = dataNotes[i];
+
+					if (!note.isSustainNote && ((note.strumTime - coolNote.strumTime) < 2) && note.noteData == data) {
+						trace('found a stacked/really close note ' + (note.strumTime - coolNote.strumTime));
+						// just fuckin remove it since it's a stacked note and shouldn't be there
+						note.kill();
+						UI.notes.remove(note, true);
+						note.destroy();
+					}
+				}
+			}
+
+			// boyfriend.holdTimer = 0;
+			playerNoteHit(coolNote);
+			var noteDiff:Float = -(coolNote.strumTime - Conductor.songPosition);
+		}
 	}
 
 	public function onRelese(event:KeyboardEvent) {

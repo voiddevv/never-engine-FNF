@@ -23,23 +23,15 @@
 	<window if="desktop" orientation="landscape" fullscreen="false" resizable="true" vsync="false"/>
 
 	<!-- _____________________________ Path Settings ____________________________ -->
-
 	<set name="BUILD_DIR" value="export/debug" if="debug" />
 	<set name="BUILD_DIR" value="export/release" unless="debug" />
-	<set name="BUILD_DIR" value="export/32bit" if="32bit" />
-
 	<classpath name="source" />
-	<assets path="mods" />
-	<assets path='art/readme.txt' rename='do NOT readme.txt' />
 
-	<assets path="CHANGELOG.md" rename='changelog.txt'/>
-
-	<!-- NOTE FOR FUTURE SELF SINCE FONTS ARE ALWAYS FUCKY 
-		TO FIX ONE OF THEM, I CONVERTED IT TO OTF. DUNNO IF YOU NEED TO
-		THEN UHHH I USED THE NAME OF THE FONT WITH SETFORMAT() ON THE TEXT!!!
-		NOT USING A DIRECT THING TO THE ASSET!!!
-	-->
 	<!-- flags -->
+
+	<haxeflag if="linux debug" name="--cmd" value="cp mods export/debug/linux/bin -r"/>
+	<haxeflag if="linux" name="--cmd" value="cp mods export/release/linux/bin -r"/>
+	<haxeflag if="linux" name="--cmd" value="rm -rf export/release/linux/bin/manifest" unless="debug"/>
 	<haxeflag name="-dce" value="no"/>
 	<!-- _______________________________ Libraries ______________________________ -->
 	<haxelib name="hxcpp-debug-server" if="debug cpp"/>

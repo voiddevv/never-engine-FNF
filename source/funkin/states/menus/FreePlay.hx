@@ -1,5 +1,6 @@
 package funkin.states.menus;
 
+import flixel.FlxG;
 import flixel.system.FlxAssets.FlxShader;
 import openfl.utils.ByteArray;
 import openfl.display.Shader;

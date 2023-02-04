@@ -1,5 +1,6 @@
 package engine;
 
+import flixel.FlxG;
 import flixel.input.keyboard.FlxKeyboard;
 import openfl.ui.Keyboard;
 import openfl.events.KeyboardEvent;

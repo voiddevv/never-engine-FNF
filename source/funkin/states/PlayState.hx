@@ -1,5 +1,6 @@
 package funkin.states;
 
+import flixel.FlxG;
 import cpp.Native;
 import flixel.system.FlxSound;
 import flixel.input.FlxInput.FlxInputState;

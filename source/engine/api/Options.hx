@@ -1,4 +1,7 @@
 package engine.api;
+
+import flixel.FlxG;
+
 class Options
 {
 	// default shit

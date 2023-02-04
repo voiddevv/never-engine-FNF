@@ -1,5 +1,7 @@
 package engine.utills;
 
+import flixel.FlxG;
+
 class Mem {
     public static function clearAll():Void {
         Assets.cache.clear();

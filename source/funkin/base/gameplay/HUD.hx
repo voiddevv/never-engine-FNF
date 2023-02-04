@@ -1,22 +1,11 @@
 package funkin.base.gameplay;
 
-import lime.tools.Command;
-import haxe.ds.HashMap;
-import flixel.group.FlxGroup.FlxTypedGroup;
-import openfl.media.Sound;
-import lime.media.openal.AL;
-import flixel.util.FlxStringUtil;
-import haxe.io.Encoding;
-import haxe.crypto.BaseCode;
-import haxe.io.Bytes;
-import haxe.crypto.Base64;
+import flixel.FlxG;
+import flixel.util.FlxTimer;
 import flixel.FlxSprite;
-import flixel.text.FlxText;
-import flixel.util.FlxColor;
 import flixel.ui.FlxBar;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
-import flixel.util.FlxTimer;
 import flixel.system.FlxSound;
 import flixel.math.FlxMath;
 import flixel.group.FlxSpriteGroup;
@@ -157,7 +146,7 @@ class HUD extends FlxSpriteGroup {
 			numSprite.velocity.y -= FlxG.random.int(140, 160);
 			numSprite.velocity.x = FlxG.random.float(-5, 5);
 			add(numSprite);
-			numSprite.x += 50 * i;
+			numSprite.x += 57 * i;
 			FlxTween.tween(numSprite, {alpha: 0}, 0.2, {
 				startDelay: Conductor.crochet / 1000,
 				onComplete: function(tween) {
@@ -192,7 +181,7 @@ class HUD extends FlxSpriteGroup {
 		new FlxTimer().start(Conductor.crochet / 1000, function(timer:FlxTimer) {
 			var CountDownSprite = new FNFSprite();
 			if (soundMap.exists(COUNT))
-				FlxG.sound.play(Paths.sound('countdown/${soundMap.get(COUNT)}'));
+				FlxG.sound.play( Paths.sound('countdown/${soundMap.get(COUNT)}'));
 			if (imageMap.exists(COUNT))
 				CountDownSprite.loadGraphic(Assets.load(IMAGE, Paths.image('ui/countdown/${imageMap.get(COUNT)}')));
 			CountDownSprite.screenCenter();

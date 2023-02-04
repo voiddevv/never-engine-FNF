@@ -1,5 +1,6 @@
 package engine;
 
+import flixel.FlxG;
 import haxe.Timer;
 import openfl.display.FPS;
 import openfl.events.Event;

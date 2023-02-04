@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxG;
 import flixel.util.FlxSignal.FlxTypedSignal;
 import Song.SwagSong;
 

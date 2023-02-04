@@ -1,5 +1,6 @@
 package funkin.states.menus;
 
+import flixel.FlxG;
 import flixel.effects.FlxFlicker;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;

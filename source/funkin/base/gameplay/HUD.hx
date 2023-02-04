@@ -181,7 +181,7 @@ class HUD extends FlxSpriteGroup {
 		new FlxTimer().start(Conductor.crochet / 1000, function(timer:FlxTimer) {
 			var CountDownSprite = new FNFSprite();
 			if (soundMap.exists(COUNT))
-				FlxG.sound.play( Paths.sound('countdown/${soundMap.get(COUNT)}'));
+				FlxG.sound.play(Assets.load(SOUND,Paths.sound('countdown/${soundMap.get(COUNT)}')));
 			if (imageMap.exists(COUNT))
 				CountDownSprite.loadGraphic(Assets.load(IMAGE, Paths.image('ui/countdown/${imageMap.get(COUNT)}')));
 			CountDownSprite.screenCenter();

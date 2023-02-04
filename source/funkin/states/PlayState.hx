@@ -223,7 +223,7 @@ class PlayState extends MusicBeatState {
 
 	public function startMusic() {
 		FlxG.sound.playMusic(Assets.load(SOUND, Paths.inst(SONG.song)), 1, false);
-		voice.loadEmbedded(Paths.voices(SONG.song), false, false);
+		voice.loadEmbedded(Assets.load(SOUND,Paths.voices(SONG.song)), false, false);
 		FlxG.sound.list.add(voice);
 		voice.play();
 		syncMusic();

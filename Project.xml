@@ -28,10 +28,15 @@
 	<classpath name="source" />
 
 	<!-- flags -->
-
+	<!-- linux -->
 	<haxeflag if="linux debug" name="--cmd" value="cp mods export/debug/linux/bin -r"/>
 	<haxeflag if="linux" name="--cmd" value="cp mods export/release/linux/bin -r"/>
 	<haxeflag if="linux" name="--cmd" value="rm -rf export/release/linux/bin/manifest" unless="debug"/>
+	<!-- windows -->
+	<haxeflag if="windows debug" name="--cmd" value="cp mods export/debug/windows/bin -r"/>
+	<haxeflag if="windows" name="--cmd" value="cp mods export/release/windows/bin -r"/>
+	<haxeflag if="windows" name="--cmd" value="rmdir export/release/windows/bin/manifest" unless="debug"/>
+	<!-- genreal -->
 	<haxeflag name="-dce" value="no"/>
 	<!-- _______________________________ Libraries ______________________________ -->
 	<haxelib name="hxcpp-debug-server" if="debug cpp"/>

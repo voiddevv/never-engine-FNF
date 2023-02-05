@@ -13,6 +13,7 @@ import flixel.group.FlxSpriteGroup;
 class HUD extends FlxSpriteGroup {
 	public static var COUNT:Int = 0;
 
+	public var unspawnedNotes:Array<Note> = [];
 	public var notes = new FlxTypedSpriteGroup<Note>();
 	public var dadStrum = new Strum();
 	public var playerStrum = new Strum();
@@ -64,15 +65,15 @@ class HUD extends FlxSpriteGroup {
 					var susNote:Note = new Note(stumtime + (Conductor.stepCrochet * sus) + 50, direction % 4, lastNote, true);
 					susNote.mustPress = hitDaNote;
 					lastNote = susNote;
-					notes.add(susNote);
+					unspawnedNotes.push(susNote);
 					susNote.x = dadStrum.members[theNote.noteData].x + 35;
 					if (hitDaNote)
 						susNote.x = playerStrum.members[theNote.noteData].x + 35;
 				}
-				notes.add(theNote);
+				unspawnedNotes.push(theNote);
 			}
 		var oldNote:Note = null;
-		for (note in notes.members) {
+		for (note in unspawnedNotes) {
 			if (oldNote != null && oldNote.noteData == note.noteData && oldNote.strumTime == note.strumTime) {
 				trace("stack Note");
 				notes.remove(note, true);
@@ -90,12 +91,12 @@ class HUD extends FlxSpriteGroup {
 	function fixedUpdate(elapsed:Float) {
 		Conductor.songPosition += elapsed * 1000;
 		FlxG.watch.addQuick("SongPosition", Conductor.songPosition);
-		notes.forEach(function(note:Note) {
-			if (Math.abs(getNoteDiff(note)) >= 1000)
-				note.kill();
-			else
-				note.revive();
-		}, true);
+		for (note in unspawnedNotes) {
+			if (getNoteDiff(note) >= -1000) {
+				notes.add(note);
+				unspawnedNotes.remove(note);
+			}
+		}
 		notes.forEachAlive(function(note:Note) {
 			note.y = dadStrum.y - (Conductor.songPosition - note.strumTime) * (0.45 * FlxMath.roundDecimal(PlayState.SONG.speed, 2));
 			if (note.mustPress)
@@ -156,7 +157,7 @@ class HUD extends FlxSpriteGroup {
 			});
 		}
 		trace(comboArray);
-		rating.scale.set(0.7,0.7);
+		rating.scale.set(0.7, 0.7);
 		rating.updateHitbox();
 		rating.screenCenter();
 		ratingGroup.add(rating);
@@ -181,7 +182,7 @@ class HUD extends FlxSpriteGroup {
 		new FlxTimer().start(Conductor.crochet / 1000, function(timer:FlxTimer) {
 			var CountDownSprite = new FNFSprite();
 			if (soundMap.exists(COUNT))
-				FlxG.sound.play(Assets.load(SOUND,Paths.sound('countdown/${soundMap.get(COUNT)}')));
+				FlxG.sound.play(Assets.load(SOUND, Paths.sound('countdown/${soundMap.get(COUNT)}')));
 			if (imageMap.exists(COUNT))
 				CountDownSprite.loadGraphic(Assets.load(IMAGE, Paths.image('ui/countdown/${imageMap.get(COUNT)}')));
 			CountDownSprite.screenCenter();
